@@ -1,3 +1,5 @@
+import { app, db } from "./firebase";
+
 // https://openai.com/blog/rss.xml
 // https://www.deepmind.com/blog/rss.xml
 // https://news.mit.edu/topic/mitmachine-learning-rss.xml
