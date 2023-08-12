@@ -4,6 +4,10 @@ import {
   collection,
   doc,
   addDoc,
+  query,
+  orderBy,
+  where,
+  deleteDoc,
   getDoc,
   getDocs,
   setDoc,
@@ -26,4 +30,17 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-export { app, db, collection, doc, addDoc, getDoc, getDocs, setDoc };
+export {
+  app,
+  db,
+  collection,
+  doc,
+  addDoc,
+  where,
+  deleteDoc,
+  query,
+  orderBy,
+  getDoc,
+  getDocs,
+  setDoc,
+};
