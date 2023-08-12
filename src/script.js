@@ -1,16 +1,11 @@
 import {
   db,
   collection,
-  doc,
   addDoc,
-  getDoc,
   getDocs,
-  writeBatch,
   query,
   where,
   deleteDoc,
-  orderBy,
-  setDoc,
 } from "./firebase";
 
 // API: apnews, bbc
@@ -25,18 +20,25 @@ const rssFeeder = (() => {
   ];
 
   function parseData(data) {
-    // Utilizing the map function to iterate through each object in the 'items' array,
-    // and transforming it into the structured format described below.
-    const parsedData = data.items.map((item) => {
-      return {
-        // Extract the title, link, description, source and date property from the current item
-        title: item.title,
-        link: item.link,
-        description: item.description || "No description available",
-        source: data.title,
-        date: new Date(item.published),
-      };
-    });
+    // Get the current date and calculate one year ago
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+    const parsedData = data.items
+      // Filter out items older than one year
+      .filter((item) => new Date(item.published) > oneYearAgo)
+      // Utilize the map function to iterate through each object in the 'items' array,
+      // and transform it into the structured format described below.
+      .map((item) => {
+        return {
+          // Extract the title, link, description, source and date property from the current item
+          title: item.title,
+          link: item.link,
+          description: item.description || "No description available",
+          source: data.title,
+          date: new Date(item.published),
+        };
+      });
 
     return parsedData;
   }
@@ -115,56 +117,53 @@ const rssFeeder = (() => {
   }
 
   function deleteOldData() {
-    // ...
+    const today = new Date();
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(today.getFullYear() - 1);
+
+    console.log("Today:", today);
+    console.log("One Year Ago:", oneYearAgo);
+
+    const q = query(collection(db, "ai"), where("date", "<", oneYearAgo));
+
+    getDocs(q)
+      .then((querySnapshot) => {
+        console.log("Query snapshot length:", querySnapshot.size);
+        querySnapshot.forEach((doc) => {
+          const documentData = doc.data();
+          console.log("Document data:", documentData);
+          console.log("Deleting document:", documentData.title);
+          deleteDoc(doc.ref)
+            .then(() => {
+              console.log("Document deleted successfully!");
+            })
+            .catch((error) => {
+              console.error("Error deleting document:", error);
+            });
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching and deleting documents:", error);
+      });
   }
 
   return {
     feedUrls,
     fetchData,
     addToFirestore,
+    deleteOldData,
   };
 })();
 
-rssFeeder
-  .fetchData("https://openai.com/blog/rss.xml")
-  .then((parsedData) => {
-    return rssFeeder.addToFirestore(parsedData);
-  })
-  .catch((error) => {
-    console.error("An error occurred:", error);
-  });
+// rssFeeder.deleteOldData();
 
-// https://openai.com/blog/rss.xml
-// https://www.deepmind.com/blog/rss.xml
-// https://news.mit.edu/topic/mitmachine-learning-rss.xml
-
-// ==========================================================================================
-
-// const today = new Date();
-// const oneYearAgo = new Date();
-// oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-// console.log("Today:", today);
-// console.log("One Year Ago:", oneYearAgo);
-
-// const q = query(collection(db, "ai"), where("date", "<", oneYearAgo));
-
-// getDocs(q)
-//   .then((querySnapshot) => {
-//     console.log("Query snapshot length:", querySnapshot.size);
-//     querySnapshot.forEach((doc) => {
-//       const documentData = doc.data();
-//       console.log("Document data:", documentData);
-//       console.log("Deleting document:", documentData.title);
-//       deleteDoc(doc.ref)
-//         .then(() => {
-//           console.log("Document deleted successfully!");
-//         })
-//         .catch((error) => {
-//           console.error("Error deleting document:", error);
-//         });
-//     });
+// rssFeeder
+//   .fetchData("https://openai.com/blog/rss.xml")
+//   .then((parsedData) => {
+//     return rssFeeder.addToFirestore(parsedData);
 //   })
 //   .catch((error) => {
-//     console.error("Error fetching and deleting documents:", error);
+//     console.error("An error occurred:", error);
 //   });
+
+// ==========================================================================================
