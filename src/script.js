@@ -12,10 +12,85 @@ import {
   setDoc,
 } from "./firebase";
 
+// API: apnews, bbc
+
+const rssFeeder = (() => {
+  const feedUrls = [
+    { openai: "https://openai.com/blog/rss.xml" },
+    { deepmind: "https://www.deepmind.com/blog/rss.xml" },
+    { mitNews: "https://news.mit.edu/topic/mitmachine-learning-rss.xml" },
+  ];
+
+  function parseData(data) {
+    // Utilizing the map function to iterate through each object in the 'items' array,
+    // and transforming it into the structured format described below.
+    const parsedData = data.items.map((item) => {
+      return {
+        // Extract the title, link, description, source and date property from the current item
+        title: item.title,
+        link: item.link,
+        description: item.description || "No description available",
+        source: data.title,
+        date: new Date(item.published),
+      };
+    });
+
+    return parsedData;
+  }
+
+  function fetchData(url) {
+    const apiUrl = `https://rss-to-json-serverless-api.vercel.app/api?feedURL=${url}`;
+    return fetch(apiUrl)
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data);
+        const parsedData = parseData(data);
+        console.log(parsedData);
+        return parsedData;
+      })
+      .catch((error) => {
+        console.error("An error occurred while fetching data:", error);
+        throw error;
+      });
+  }
+
+  function getExistingTitles() {
+    return getDocs(collection(db, "ai"))
+      .then((querySnapshot) => {
+        const titles = [];
+        querySnapshot.forEach((doc) => {
+          titles.push(doc.data().title);
+        });
+        console.log(titles);
+        return titles;
+      })
+      .catch((error) => {
+        console.error("Error getting existing titles:", error);
+        throw error;
+      });
+  }
+
+  function addToFirestore() {
+    // ...
+  }
+
+  function deleteOldData() {
+    // ...
+  }
+
+  return {
+    feedUrls,
+    fetchData,
+    getExistingTitles,
+  };
+})();
+
+rssFeeder.fetchData("https://openai.com/blog/rss.xml");
+rssFeeder.getExistingTitles();
+
 // https://openai.com/blog/rss.xml
 // https://www.deepmind.com/blog/rss.xml
 // https://news.mit.edu/topic/mitmachine-learning-rss.xml
-// API: apnews, bbc
 
 // ==========================================================================================
 
@@ -75,66 +150,6 @@ import {
 //   .catch((error) => {
 //     console.error("An error occurred:", error);
 //   });
-
-// ==========================================================================================
-
-// Query the "ai" collection, order by the "date" field in descending order
-const q = query(collection(db, "ai"), orderBy("date", "desc"));
-
-// Fetch the documents and render them
-getDocs(q)
-  .then((querySnapshot) => {
-    // Get the container element
-    const itemContainer = document.getElementById("itemContainer");
-
-    // Convert the stored date string to a JavaScript Date object and then sort
-    const sortedDocs = querySnapshot.docs.sort((a, b) => {
-      const dateA = new Date(a.data().date);
-      const dateB = new Date(b.data().date);
-      return dateB - dateA; // Sort in descending order
-    });
-
-    // Iterate through the query snapshot and render documents
-    sortedDocs.forEach((doc) => {
-      const documentData = doc.data();
-
-      // Create a new <div> element for each item
-      const itemElement = document.createElement("div");
-      itemElement.classList.add("item"); // Optional: Add a CSS class for styling
-
-      // Create elements for each property and set their content
-      const titleElement = document.createElement("h2");
-      titleElement.textContent = documentData.title;
-
-      const linkElement = document.createElement("a");
-      linkElement.href = documentData.link;
-      linkElement.target = "_blank";
-      linkElement.textContent = "Read more";
-
-      const descriptionElement = document.createElement("p");
-      descriptionElement.textContent = documentData.description;
-
-      const sourceElement = document.createElement("p");
-      sourceElement.textContent = "Source: " + documentData.source;
-
-      const dateElement = document.createElement("p");
-      const formattedDate = documentData.date.toDate().toLocaleString();
-      dateElement.textContent = "Date: " + formattedDate;
-
-      // Append the elements to the item container
-      itemElement.appendChild(titleElement);
-      itemElement.appendChild(linkElement);
-      itemElement.appendChild(descriptionElement);
-      itemElement.appendChild(sourceElement);
-      itemElement.appendChild(dateElement);
-
-      // Append the item element to the container
-      itemContainer.appendChild(itemElement);
-    });
-  })
-  .catch((error) => {
-    console.error("Error fetching and rendering documents:", error);
-  });
 
 // ==========================================================================================
 
