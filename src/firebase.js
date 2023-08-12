@@ -2,16 +2,11 @@ import { initializeApp } from "firebase/app";
 import {
   getFirestore,
   collection,
-  doc,
   addDoc,
-  query,
-  orderBy,
-  where,
-  writeBatch,
-  deleteDoc,
-  getDoc,
   getDocs,
-  setDoc,
+  query,
+  where,
+  deleteDoc,
 } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 
@@ -31,18 +26,4 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-export {
-  app,
-  db,
-  collection,
-  doc,
-  addDoc,
-  where,
-  deleteDoc,
-  query,
-  writeBatch,
-  orderBy,
-  getDoc,
-  getDocs,
-  setDoc,
-};
+export { app, db, collection, addDoc, getDocs, query, where, deleteDoc };
