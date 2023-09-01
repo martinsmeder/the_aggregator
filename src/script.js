@@ -8,6 +8,61 @@ import {
   deleteDoc,
 } from "./firebase";
 
+function getPromises() {
+  const urls = [
+    "https://www.deepmind.com/blog/rss.xml",
+    "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
+  ];
+  const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
+  const promises = urls.map((url) => fetch(api + url));
+  return promises;
+}
+
+function getOneYearAgo() {
+  const today = new Date();
+  const oneYearAgo = new Date(
+    today.getFullYear() - 1,
+    today.getMonth(),
+    today.getDate()
+  );
+  return oneYearAgo;
+}
+
+function parse(data) {
+  const oneYearAgo = getOneYearAgo();
+  const parsedData = data.items
+    .filter((item) => new Date(item.published) > oneYearAgo)
+    .map((item) => {
+      return {
+        date: new Date(item.published),
+        title: item.title,
+        link: item.link,
+        description: item.description || "No description available",
+        source: data.title,
+      };
+    });
+
+  return parsedData;
+}
+
+function sort(array) {
+  const flattened = array.flat();
+  const sorted = flattened.sort((a, b) => b.date - a.date);
+  return sorted;
+}
+
+const promises = getPromises();
+
+Promise.all(promises)
+  .then((responses) =>
+    Promise.all(responses.map((response) => response.json()))
+  )
+  .then((dataArray) => dataArray.map((data) => parse(data)))
+  .then((parsed) => sort(parsed))
+  .then((sorted) => console.log(sorted))
+  .catch((error) => console.error(error));
+
+// ==========================================================================================
 // const rssFeeder = (() => {
 //   let existingTitlesSet = new Set();
 
