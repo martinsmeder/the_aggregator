@@ -1,12 +1,13 @@
 import {
-  db,
   collection,
-  addDoc,
+  doc,
   getDocs,
+  limit,
+  orderBy,
   query,
-  where,
-  deleteDoc,
-} from "./firebase";
+  writeBatch,
+} from "firebase/firestore";
+import { db } from "./firebase";
 
 // 0. Get categories
 // 1. Store sorted data
@@ -43,7 +44,7 @@ const rss = (() => {
   function parse(array, category) {
     const oneYearAgo = getOneYearAgo();
     const parsedData = array.items
-      .filter((item) => new Date(item.published) > oneYearAgo)
+      // .filter((item) => new Date(item.published) > oneYearAgo)
       .map((item) => {
         return {
           date: new Date(item.published),
@@ -52,6 +53,7 @@ const rss = (() => {
           description: item.description || "No description available",
           source: array.title,
           category: category,
+          timestamp: new Date(item.published).getTime(),
         };
       });
 
@@ -65,17 +67,22 @@ const rss = (() => {
   }
 
   function getRssData() {
-    const promises = getPromises();
+    // Return promise in order to continue the chain when calling getRssData()
+    return new Promise((resolve, reject) => {
+      const promises = getPromises();
 
-    Promise.all(promises)
-      .then((responses) =>
-        Promise.all(responses.map((response) => response.json()))
-      )
-      .then((dataArray) =>
-        sort(dataArray.map((data, index) => parse(data, urls[index].category)))
-      )
-      .then((processed) => console.log(processed))
-      .catch((error) => console.error(error));
+      Promise.all(promises)
+        .then((responses) =>
+          Promise.all(responses.map((response) => response.json()))
+        )
+        .then((dataArray) =>
+          sort(
+            dataArray.map((data, index) => parse(data, urls[index].category))
+          )
+        )
+        .then((processed) => resolve(processed))
+        .catch((error) => reject(error));
+    });
   }
 
   return {
@@ -83,8 +90,40 @@ const rss = (() => {
   };
 })();
 
-rss.getRssData();
+function addToFirestore(processedData) {
+  const batch = writeBatch(db);
 
+  processedData.forEach((item) => {
+    const collectionRef = collection(db, "all-items");
+    const docRef = doc(collectionRef);
+    batch.set(docRef, item);
+  });
+
+  return batch.commit();
+}
+
+function queryItems(order, limit) {
+  /// ??????????????????????????????????
+  const collectionRef = collection(db, "all-items");
+  const query = query(collectionRef).orderBy("timestamp", order).limit(limit);
+
+  getDocs(query)
+    .then((querySnapshot) =>
+      querySnapshot.forEach((doc) => console.log(doc.data()))
+    )
+    .catch((error) => console.error(error));
+}
+
+queryItems("desc", 200);
+
+// rss
+//   .getRssData()
+//   .then((processedData) => {
+//     console.log(processedData);
+//     return addToFirestore(processedData);
+//   })
+//   .then(() => console.log("Items successfully added to Firestore"))
+//   .catch((error) => console.error(error));
 // ==========================================================================================
 
 // function addToFirestore(parsedData) {
