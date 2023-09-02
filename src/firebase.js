@@ -1,13 +1,5 @@
 import { initializeApp } from "firebase/app";
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  query,
-  where,
-  deleteDoc,
-} from "firebase/firestore";
+import { getFirestore } from "firebase/firestore";
 // import { getAnalytics } from "firebase/analytics";
 
 const firebaseConfig = {
@@ -26,4 +18,4 @@ const app = initializeApp(firebaseConfig);
 
 const db = getFirestore(app);
 
-export { app, db, collection, addDoc, getDocs, query, where, deleteDoc };
+export { app, db };
