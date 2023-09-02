@@ -8,206 +8,157 @@ import {
   deleteDoc,
 } from "./firebase";
 
-function getPromises() {
+// 0. Get categories
+// 1. Store sorted data
+// 2. Check for old content
+// 3. Remove old content
+// 4. Check for duplicates
+// 5. Add new data
+
+const rss = (() => {
   const urls = [
-    "https://www.deepmind.com/blog/rss.xml",
-    "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
+    { category: "ai", url: "https://www.deepmind.com/blog/rss.xml" },
+    {
+      category: "ai",
+      url: "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
+    },
   ];
-  const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-  const promises = urls.map((url) => fetch(api + url));
-  return promises;
-}
 
-function getOneYearAgo() {
-  const today = new Date();
-  const oneYearAgo = new Date(
-    today.getFullYear() - 1,
-    today.getMonth(),
-    today.getDate()
-  );
-  return oneYearAgo;
-}
+  function getPromises() {
+    const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
+    const promises = urls.map((source) => fetch(api + source.url));
+    return promises;
+  }
 
-function parse(data) {
-  const oneYearAgo = getOneYearAgo();
-  const parsedData = data.items
-    .filter((item) => new Date(item.published) > oneYearAgo)
-    .map((item) => {
-      return {
-        date: new Date(item.published),
-        title: item.title,
-        link: item.link,
-        description: item.description || "No description available",
-        source: data.title,
-      };
-    });
+  function getOneYearAgo() {
+    const today = new Date();
+    const oneYearAgo = new Date(
+      today.getFullYear() - 1,
+      today.getMonth(),
+      today.getDate()
+    );
+    return oneYearAgo;
+  }
 
-  return parsedData;
-}
+  function parse(array, category) {
+    const oneYearAgo = getOneYearAgo();
+    const parsedData = array.items
+      .filter((item) => new Date(item.published) > oneYearAgo)
+      .map((item) => {
+        return {
+          date: new Date(item.published),
+          title: item.title,
+          link: item.link,
+          description: item.description || "No description available",
+          source: array.title,
+          category: category,
+        };
+      });
 
-function sort(array) {
-  const flattened = array.flat();
-  const sorted = flattened.sort((a, b) => b.date - a.date);
-  return sorted;
-}
+    return parsedData;
+  }
 
-const promises = getPromises();
+  function sort(array) {
+    const flattened = array.flat();
+    const sorted = flattened.sort((a, b) => b.date - a.date);
+    return sorted;
+  }
 
-Promise.all(promises)
-  .then((responses) =>
-    Promise.all(responses.map((response) => response.json()))
-  )
-  .then((dataArray) => dataArray.map((data) => parse(data)))
-  .then((parsed) => sort(parsed))
-  .then((sorted) => console.log(sorted))
-  .catch((error) => console.error(error));
+  function getRssData() {
+    const promises = getPromises();
+
+    Promise.all(promises)
+      .then((responses) =>
+        Promise.all(responses.map((response) => response.json()))
+      )
+      .then((dataArray) =>
+        sort(dataArray.map((data, index) => parse(data, urls[index].category)))
+      )
+      .then((processed) => console.log(processed))
+      .catch((error) => console.error(error));
+  }
+
+  return {
+    getRssData,
+  };
+})();
+
+rss.getRssData();
 
 // ==========================================================================================
-// const rssFeeder = (() => {
-//   let existingTitlesSet = new Set();
 
-//   const feedUrls = [
-//     { openai: "https://openai.com/blog/rss.xml" },
-//     { deepmind: "https://www.deepmind.com/blog/rss.xml" },
-//     { mitNews: "https://news.mit.edu/topic/mitmachine-learning-rss.xml" },
-//   ];
+// function addToFirestore(parsedData) {
+//   return getExistingTitles()
+//     .then(() => {
+//       const promises = [];
 
-//   function parseData(data) {
-//     const oneYearAgo = new Date();
-//     oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+//       parsedData.forEach((item) => {
+//         const titleToCheck = item.title;
 
-//     const parsedData = data.items
-//       .filter((item) => new Date(item.published) > oneYearAgo)
-
-//       .map((item) => {
-//         return {
-//           title: item.title,
-//           link: item.link,
-//           description: item.description || "No description available",
-//           source: data.title,
-//           date: new Date(item.published),
-//         };
-//       });
-
-//     return parsedData;
-//   }
-
-//   function fetchData(url) {
-//     const apiUrl = `https://rss-to-json-serverless-api.vercel.app/api?feedURL=${url}`;
-//     return fetch(apiUrl)
-//       .then((response) => response.json())
-//       .then((data) => {
-//         console.log(data);
-//         const parsedData = parseData(data);
-//         console.log(parsedData);
-//         return parsedData;
-//       })
-//       .catch((error) => {
-//         console.error("An error occurred while fetching data:", error);
-//         throw error;
-//       });
-//   }
-
-//   function getExistingTitles() {
-//     return getDocs(collection(db, "ai"))
-//       .then((querySnapshot) => {
-//         querySnapshot.forEach((doc) => {
-//           existingTitlesSet.add(doc.data().title);
-//         });
-//         console.log(existingTitlesSet);
-//         return existingTitlesSet;
-//       })
-//       .catch((error) => {
-//         console.error("Error getting existing titles:", error);
-//         throw error;
-//       });
-//   }
-
-//   function addToFirestore(parsedData) {
-//     return getExistingTitles()
-//       .then(() => {
-//         const promises = [];
-
-//         parsedData.forEach((item) => {
-//           const titleToCheck = item.title;
-
-//           if (!existingTitlesSet.has(titleToCheck)) {
-//             const promise = addDoc(collection(db, "ai"), {
-//               title: item.title,
-//               link: item.link,
-//               description: item.description,
-//               source: item.source,
-//               date: item.date,
-//             })
-//               .then(() => {
-//                 console.log(`Document '${titleToCheck}' written successfully!`);
-//                 existingTitlesSet.add(titleToCheck);
-//               })
-//               .catch((error) => {
-//                 console.error("Error adding document to Firestore:", error);
-//               });
-
-//             promises.push(promise);
-//           } else {
-//             console.log(
-//               `Document '${titleToCheck}' already exists, skipping...`
-//             );
-//           }
-//         });
-
-//         return Promise.all(promises);
-//       })
-//       .then(() => {
-//         existingTitlesSet.clear();
-//       })
-//       .catch((error) => {
-//         console.error("An error occurred:", error);
-//       });
-//   }
-
-//   function deleteOldData() {
-//     const today = new Date();
-//     const oneYearAgo = new Date();
-//     oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-//     console.log("Today:", today);
-//     console.log("One Year Ago:", oneYearAgo);
-
-//     const q = query(collection(db, "ai"), where("date", "<", oneYearAgo));
-
-//     getDocs(q)
-//       .then((querySnapshot) => {
-//         console.log("Query snapshot length:", querySnapshot.size);
-//         querySnapshot.forEach((doc) => {
-//           const documentData = doc.data();
-//           console.log("Document data:", documentData);
-//           console.log("Deleting document:", documentData.title);
-//           deleteDoc(doc.ref)
+//         if (!existingTitlesSet.has(titleToCheck)) {
+//           const promise = addDoc(collection(db, "ai"), {
+//             title: item.title,
+//             link: item.link,
+//             description: item.description,
+//             source: item.source,
+//             date: item.date,
+//           })
 //             .then(() => {
-//               console.log("Document deleted successfully!");
+//               console.log(`Document '${titleToCheck}' written successfully!`);
+//               existingTitlesSet.add(titleToCheck);
 //             })
 //             .catch((error) => {
-//               console.error("Error deleting document:", error);
+//               console.error("Error adding document to Firestore:", error);
 //             });
-//         });
-//       })
-//       .catch((error) => {
-//         console.error("Error fetching and deleting documents:", error);
+
+//           promises.push(promise);
+//         } else {
+//           console.log(`Document '${titleToCheck}' already exists, skipping...`);
+//         }
 //       });
-//   }
 
-//   return {
-//     feedUrls,
-//     fetchData,
-//     addToFirestore,
-//     deleteOldData,
-//   };
-// })();
+//       return Promise.all(promises);
+//     })
+//     .then(() => {
+//       existingTitlesSet.clear();
+//     })
+//     .catch((error) => {
+//       console.error("An error occurred:", error);
+//     });
+// }
 
-// rssFeeder.deleteOldData();
+// function deleteOldData() {
+//   const today = new Date();
+//   const oneYearAgo = new Date();
+//   oneYearAgo.setFullYear(today.getFullYear() - 1);
 
-// rssFeeder
-//   .fetchData("https://news.mit.edu/topic/mitmachine-learning-rss.xml")
+//   console.log("Today:", today);
+//   console.log("One Year Ago:", oneYearAgo);
+
+//   const q = query(collection(db, "ai"), where("date", "<", oneYearAgo));
+
+//   getDocs(q)
+//     .then((querySnapshot) => {
+//       console.log("Query snapshot length:", querySnapshot.size);
+//       querySnapshot.forEach((doc) => {
+//         const documentData = doc.data();
+//         console.log("Document data:", documentData);
+//         console.log("Deleting document:", documentData.title);
+//         deleteDoc(doc.ref)
+//           .then(() => {
+//             console.log("Document deleted successfully!");
+//           })
+//           .catch((error) => {
+//             console.error("Error deleting document:", error);
+//           });
+//       });
+//     })
+//     .catch((error) => {
+//       console.error("Error fetching and deleting documents:", error);
+//     });
+// }
+
+// fetchData("https://news.mit.edu/topic/mitmachine-learning-rss.xml")
 //   .then((parsedData) => {
 //     return rssFeeder.addToFirestore(parsedData);
 //   })
