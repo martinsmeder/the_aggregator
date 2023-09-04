@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocs,
   limit,
@@ -9,12 +10,17 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-// 0. Get categories
-// 1. Store sorted data
-// 2. Check for old content
-// 3. Remove old content
-// 4. Check for duplicates
+// "desc": 1/9 23 --> 7/12 23
+// "asc": 10/19 20 --> 11/9 21
+
+// 0. ---
+// 1. ---
+// 2. ---
+// 3. ---
+// 4. Check for duplicates -
 // 5. Add new data
+
+// https://pmarca.substack.com/feed
 
 const rss = (() => {
   const urls = [
@@ -46,8 +52,9 @@ const rss = (() => {
     const parsedData = array.items
       // .filter((item) => new Date(item.published) > oneYearAgo)
       .map((item) => {
+        const date = new Date(item.published);
         return {
-          date: new Date(item.published),
+          date: date.toLocaleString(),
           title: item.title,
           link: item.link,
           description: item.description || "No description available",
@@ -86,41 +93,64 @@ const rss = (() => {
   }
 
   return {
+    getOneYearAgo,
     getRssData,
   };
 })();
 
-function addToFirestore(processedData) {
-  const batch = writeBatch(db);
-
-  processedData.forEach((item) => {
+const firestore = (() => {
+  function queryItems(order, itemLimit) {
     const collectionRef = collection(db, "all-items");
-    const docRef = doc(collectionRef);
-    batch.set(docRef, item);
-  });
+    const q = query(
+      collectionRef,
+      orderBy("timestamp", order),
+      limit(itemLimit)
+    );
 
-  return batch.commit();
-}
+    return getDocs(q);
+  }
 
-function queryItems(order, limit) {
-  /// ??????????????????????????????????
-  const collectionRef = collection(db, "all-items");
-  const query = query(collectionRef).orderBy("timestamp", order).limit(limit);
+  function deleteOldData(querySnapshot) {
+    const oneYearAgo = rss.getOneYearAgo();
 
-  getDocs(query)
-    .then((querySnapshot) =>
-      querySnapshot.forEach((doc) => console.log(doc.data()))
-    )
-    .catch((error) => console.error(error));
-}
+    const deletionPromises = querySnapshot.docs
+      .filter((doc) => doc.data().timestamp < oneYearAgo.getTime())
+      .map((doc) => deleteDoc(doc.ref));
 
-queryItems("desc", 200);
+    return Promise.all(deletionPromises);
+  }
 
+  function addToFirestore(processedData) {
+    const batch = writeBatch(db); // Max batch = 500 operations
+
+    processedData.forEach((item) => {
+      const collectionRef = collection(db, "all-items");
+      const docRef = doc(collectionRef);
+      batch.set(docRef, item);
+    });
+
+    return batch.commit();
+  }
+  return {
+    queryItems,
+    deleteOldData,
+    addToFirestore,
+  };
+})();
+
+// Delete old data:
+// firestore
+//   .queryItems("asc", 50)
+//   .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
+//   .then(() => console.log("Old data successfully deleted."))
+//   .catch((error) => console.error("Error:", error));
+
+// // Add new data:
 // rss
 //   .getRssData()
 //   .then((processedData) => {
 //     console.log(processedData);
-//     return addToFirestore(processedData);
+//     return firestore.addToFirestore(processedData);
 //   })
 //   .then(() => console.log("Items successfully added to Firestore"))
 //   .catch((error) => console.error(error));
