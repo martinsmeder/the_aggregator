@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -17,8 +18,13 @@ import { db } from "./firebase";
 // 1. ---
 // 2. ---
 // 3. ---
-// 4. Check for duplicates -
-// 5. Add new data
+// 4. ---
+// 5. ---
+// 6. Simulate the real thing and make sure duplication is avoided, and deletion works as well
+// 7. Batch write instead
+// 8. Check for improvements
+// 9. Try out github actions
+// 10. Start building the real thing, starting with API's, and adding RSS where needed
 
 // https://pmarca.substack.com/feed
 
@@ -112,25 +118,55 @@ const firestore = (() => {
 
   function deleteOldData(querySnapshot) {
     const oneYearAgo = rss.getOneYearAgo();
+    const deletionPromises = [];
 
-    const deletionPromises = querySnapshot.docs
-      .filter((doc) => doc.data().timestamp < oneYearAgo.getTime())
-      .map((doc) => deleteDoc(doc.ref));
+    const itemsToDelete = querySnapshot.docs.filter(
+      (doc) => doc.data().timestamp < oneYearAgo.getTime()
+    );
+
+    itemsToDelete.forEach((doc) => {
+      const itemToDelete = deleteDoc(doc.ref).catch((error) =>
+        console.error(`Error deleting ${doc.ref.path}:`, error)
+      );
+      deletionPromises.push(itemToDelete);
+    });
 
     return Promise.all(deletionPromises);
   }
 
+  // function addToFirestore(processedData) {
+  //   const batch = writeBatch(db); // Max batch = 500 operations
+
+  //   processedData.forEach((item) => {
+  //     const collectionRef = collection(db, "all-items");
+  //     const docRef = doc(collectionRef);
+  //     batch.set(docRef, item);
+  //   });
+
+  //   return batch.commit();
+  // }
+
   function addToFirestore(processedData) {
-    const batch = writeBatch(db); // Max batch = 500 operations
+    // const batch = writeBatch(db); // Max batch = 500 operations
+    // const collectionRef = collection(db, "all-items");
+    const writePromises = [];
 
     processedData.forEach((item) => {
-      const collectionRef = collection(db, "all-items");
-      const docRef = doc(collectionRef);
-      batch.set(docRef, item);
+      if (!existingTitles.includes(item.title)) {
+        const promise = addDoc(collection(db, "all-items"), item)
+          .then(() => console.log(`${item.title} added successfully.`))
+          .catch((error) =>
+            console.log(`Error writing ${item.title}: ${error}`)
+          );
+        writePromises.push(promise);
+      } else {
+        console.log(`${item.title} already exists, skipping.`);
+      }
     });
 
-    return batch.commit();
+    return Promise.all(writePromises);
   }
+
   return {
     queryItems,
     deleteOldData,
@@ -138,101 +174,21 @@ const firestore = (() => {
   };
 })();
 
-// Delete old data:
 // firestore
 //   .queryItems("asc", 50)
 //   .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
 //   .then(() => console.log("Old data successfully deleted."))
 //   .catch((error) => console.error("Error:", error));
 
-// // Add new data:
-// rss
-//   .getRssData()
-//   .then((processedData) => {
-//     console.log(processedData);
-//     return firestore.addToFirestore(processedData);
+const existingTitles = [];
+
+// firestore
+//   .queryItems("desc", 50)
+//   .then((querySnapshot) => {
+//     querySnapshot.docs.forEach((doc) => existingTitles.push(doc.data().title));
+//     return rss.getRssData();
 //   })
-//   .then(() => console.log("Items successfully added to Firestore"))
-//   .catch((error) => console.error(error));
-// ==========================================================================================
-
-// function addToFirestore(parsedData) {
-//   return getExistingTitles()
-//     .then(() => {
-//       const promises = [];
-
-//       parsedData.forEach((item) => {
-//         const titleToCheck = item.title;
-
-//         if (!existingTitlesSet.has(titleToCheck)) {
-//           const promise = addDoc(collection(db, "ai"), {
-//             title: item.title,
-//             link: item.link,
-//             description: item.description,
-//             source: item.source,
-//             date: item.date,
-//           })
-//             .then(() => {
-//               console.log(`Document '${titleToCheck}' written successfully!`);
-//               existingTitlesSet.add(titleToCheck);
-//             })
-//             .catch((error) => {
-//               console.error("Error adding document to Firestore:", error);
-//             });
-
-//           promises.push(promise);
-//         } else {
-//           console.log(`Document '${titleToCheck}' already exists, skipping...`);
-//         }
-//       });
-
-//       return Promise.all(promises);
-//     })
-//     .then(() => {
-//       existingTitlesSet.clear();
-//     })
-//     .catch((error) => {
-//       console.error("An error occurred:", error);
-//     });
-// }
-
-// function deleteOldData() {
-//   const today = new Date();
-//   const oneYearAgo = new Date();
-//   oneYearAgo.setFullYear(today.getFullYear() - 1);
-
-//   console.log("Today:", today);
-//   console.log("One Year Ago:", oneYearAgo);
-
-//   const q = query(collection(db, "ai"), where("date", "<", oneYearAgo));
-
-//   getDocs(q)
-//     .then((querySnapshot) => {
-//       console.log("Query snapshot length:", querySnapshot.size);
-//       querySnapshot.forEach((doc) => {
-//         const documentData = doc.data();
-//         console.log("Document data:", documentData);
-//         console.log("Deleting document:", documentData.title);
-//         deleteDoc(doc.ref)
-//           .then(() => {
-//             console.log("Document deleted successfully!");
-//           })
-//           .catch((error) => {
-//             console.error("Error deleting document:", error);
-//           });
-//       });
-//     })
-//     .catch((error) => {
-//       console.error("Error fetching and deleting documents:", error);
-//     });
-// }
-
-// fetchData("https://news.mit.edu/topic/mitmachine-learning-rss.xml")
-//   .then((parsedData) => {
-//     return rssFeeder.addToFirestore(parsedData);
-//   })
-//   .catch((error) => {
-//     console.error("An error occurred:", error);
-//   });
-
-// ==========================================================================================
+//   .then((processedData) => firestore.addToFirestore(processedData))
+//   .then(() => console.log("New data successfully added."))
+//   .then(() => (existingTitles.length = 0))
+//   .catch((error) => console.log(error));
