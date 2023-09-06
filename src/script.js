@@ -11,20 +11,16 @@ import {
 } from "firebase/firestore";
 import { db } from "./firebase";
 
-// "desc": 1/9 23 --> 7/12 23
-// "asc": 10/19 20 --> 11/9 21
-
 // 0. ---
 // 1. ---
 // 2. ---
 // 3. ---
 // 4. ---
 // 5. ---
-// 6. Simulate the real thing and make sure duplication is avoided, and deletion works as well
-// 7. Batch write instead
-// 8. Check for improvements
-// 9. Try out github actions
-// 10. Start building the real thing, starting with API's, and adding RSS where needed
+// 6. ---
+// 7. ---
+// 8. Try out github actions
+// 9. Start building the real thing, starting with API's, and adding RSS where needed
 
 // https://pmarca.substack.com/feed
 
@@ -56,7 +52,7 @@ const rss = (() => {
   function parse(array, category) {
     const oneYearAgo = getOneYearAgo();
     const parsedData = array.items
-      // .filter((item) => new Date(item.published) > oneYearAgo)
+      .filter((item) => new Date(item.published) > oneYearAgo)
       .map((item) => {
         const date = new Date(item.published);
         return {
@@ -105,6 +101,8 @@ const rss = (() => {
 })();
 
 const firestore = (() => {
+  const existingTitles = [];
+
   function queryItems(order, itemLimit) {
     const collectionRef = collection(db, "all-items");
     const q = query(
@@ -118,49 +116,27 @@ const firestore = (() => {
 
   function deleteOldData(querySnapshot) {
     const oneYearAgo = rss.getOneYearAgo();
-    const deletionPromises = [];
 
-    const itemsToDelete = querySnapshot.docs.filter(
-      (doc) => doc.data().timestamp < oneYearAgo.getTime()
-    );
-
-    itemsToDelete.forEach((doc) => {
-      const itemToDelete = deleteDoc(doc.ref).catch((error) =>
-        console.error(`Error deleting ${doc.ref.path}:`, error)
+    const deletionPromises = querySnapshot.docs
+      .filter((doc) => doc.data().timestamp < oneYearAgo.getTime())
+      .map((doc) =>
+        deleteDoc(doc.ref).catch((error) =>
+          console.error(`Error deleting ${doc.ref.path}:`, error)
+        )
       );
-      deletionPromises.push(itemToDelete);
-    });
 
     return Promise.all(deletionPromises);
   }
 
-  // function addToFirestore(processedData) {
-  //   const batch = writeBatch(db); // Max batch = 500 operations
-
-  //   processedData.forEach((item) => {
-  //     const collectionRef = collection(db, "all-items");
-  //     const docRef = doc(collectionRef);
-  //     batch.set(docRef, item);
-  //   });
-
-  //   return batch.commit();
-  // }
-
   function addToFirestore(processedData) {
-    // const batch = writeBatch(db); // Max batch = 500 operations
-    // const collectionRef = collection(db, "all-items");
     const writePromises = [];
 
     processedData.forEach((item) => {
       if (!existingTitles.includes(item.title)) {
-        const promise = addDoc(collection(db, "all-items"), item)
-          .then(() => console.log(`${item.title} added successfully.`))
-          .catch((error) =>
-            console.log(`Error writing ${item.title}: ${error}`)
-          );
+        const promise = addDoc(collection(db, "all-items"), item).catch(
+          (error) => console.log(`Error writing ${item.title}: ${error}`)
+        );
         writePromises.push(promise);
-      } else {
-        console.log(`${item.title} already exists, skipping.`);
       }
     });
 
@@ -168,6 +144,7 @@ const firestore = (() => {
   }
 
   return {
+    existingTitles,
     queryItems,
     deleteOldData,
     addToFirestore,
@@ -175,20 +152,20 @@ const firestore = (() => {
 })();
 
 // firestore
-//   .queryItems("asc", 50)
+//   .queryItems("asc", 500)
 //   .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
 //   .then(() => console.log("Old data successfully deleted."))
 //   .catch((error) => console.error("Error:", error));
 
-const existingTitles = [];
-
 // firestore
-//   .queryItems("desc", 50)
+//   .queryItems("desc", 500)
 //   .then((querySnapshot) => {
-//     querySnapshot.docs.forEach((doc) => existingTitles.push(doc.data().title));
+//     querySnapshot.docs.forEach((doc) =>
+//       firestore.existingTitles.push(doc.data().title)
+//     );
 //     return rss.getRssData();
 //   })
 //   .then((processedData) => firestore.addToFirestore(processedData))
 //   .then(() => console.log("New data successfully added."))
-//   .then(() => (existingTitles.length = 0))
+//   .then(() => (firestore.existingTitles.length = 0))
 //   .catch((error) => console.log(error));
