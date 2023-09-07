@@ -2,26 +2,18 @@ name: Run Script Periodically
 
 on:
   schedule:
-    - cron: "*/2 * * * *" # Runs the job every 2 minutes (adjust as needed)
+    # Run every 5th minute
+    - cron: "*/5 * * * *"
 
 jobs:
   run-script:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
+      - uses: actions/checkout@v3
       - name: Setup Node.js
-        uses: actions/setup-node@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "14"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run script
-        run: node scripts/script.js
-
-      - name: Give a sign that the job ran
-        run: echo "Job ran at $(date)"
+      - run: npm install
+      - run: node scripts/script.js
+      - run: echo "Job ran!"
