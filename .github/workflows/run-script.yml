@@ -1,19 +1,18 @@
-name: Run Script Periodically
+# name: Run Script Periodically
 
-on:
-  schedule:
-    # Run every 5th minute
-    - cron: "*/5 * * * *"
+# on:
+#   schedule:
+#     # Run every 5th minute
+#     - cron: "*/5 * * * *"
 
-jobs:
-  run-script:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: "14"
-      - run: npm install
-      - run: node scripts/script.js
-      - run: echo "Job ran!"
-# every step must define a `uses` or `run` key
+# jobs:
+#   run-script:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#       - uses: actions/setup-node@v3
+#         with:
+#           node-version: "14"
+#       - run: npm install
+#       - run: node scripts/script.js
+#       - run: echo "Job ran!"
