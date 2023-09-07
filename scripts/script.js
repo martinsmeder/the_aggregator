@@ -1,24 +1,14 @@
-import {
+const {
   addDoc,
   collection,
   deleteDoc,
-  doc,
   getDocs,
   limit,
   orderBy,
   query,
-  writeBatch,
-} from "firebase/firestore";
-import { db } from "./firebase";
+} = require("firebase/firestore");
+const { db } = require("./firebase-cjs");
 
-// 0. ---
-// 1. ---
-// 2. ---
-// 3. ---
-// 4. ---
-// 5. ---
-// 6. ---
-// 7. ---
 // 8. Try out github actions
 // 9. Start building the real thing, starting with API's, and adding RSS where needed
 
@@ -76,7 +66,6 @@ const rss = (() => {
   }
 
   function getRssData() {
-    // Return promise in order to continue the chain when calling getRssData()
     return new Promise((resolve, reject) => {
       const promises = getPromises();
 
@@ -151,21 +140,46 @@ const firestore = (() => {
   };
 })();
 
-// firestore
-//   .queryItems("asc", 500)
-//   .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
-//   .then(() => console.log("Old data successfully deleted."))
-//   .catch((error) => console.error("Error:", error));
+const script = (() => {
+  function queryAndDelete() {
+    return firestore
+      .queryItems("asc", 500)
+      .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
+      .then(() => "Old data successfully deleted.")
+      .catch((error) => console.error(`Error: ${error}`));
+  }
 
-// firestore
-//   .queryItems("desc", 500)
-//   .then((querySnapshot) => {
-//     querySnapshot.docs.forEach((doc) =>
-//       firestore.existingTitles.push(doc.data().title)
-//     );
-//     return rss.getRssData();
-//   })
-//   .then((processedData) => firestore.addToFirestore(processedData))
-//   .then(() => console.log("New data successfully added."))
-//   .then(() => (firestore.existingTitles.length = 0))
-//   .catch((error) => console.log(error));
+  function addRssData() {
+    return firestore
+      .queryItems("desc", 500)
+      .then((querySnapshot) => {
+        querySnapshot.docs.forEach((doc) =>
+          firestore.existingTitles.push(doc.data().title)
+        );
+        return rss.getRssData();
+      })
+      .then((processedData) => firestore.addToFirestore(processedData))
+      .then(() => "New data successfully added.")
+      .catch((error) => console.error(`Error: ${error}`));
+  }
+
+  function init() {
+    queryAndDelete()
+      .then((result) => {
+        console.log(result);
+        return addRssData();
+      })
+      .then((result) => {
+        console.log(result);
+        console.log("Script executed successfully.");
+      })
+      .catch((error) => console.error(`Error: ${error}`))
+      .finally(() => process.exit(0)); // Terminate script
+  }
+
+  return {
+    init,
+  };
+})();
+
+script.init();
