@@ -14,11 +14,11 @@ jobs:
         with:
           node-version: "14"
       - uses: actions/cache@v3 # Cache dependencies to speed up installation
-          with:
-            path: ~/.npm
-            key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
-            restore-keys: |
-              ${{ runner.os }}-npm-
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
       - run: npm install
       - run: node scripts/script.js
       - run: echo "Job ran!"
