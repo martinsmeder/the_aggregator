@@ -8,6 +8,7 @@ const {
   query,
 } = require("firebase/firestore");
 const { db } = require("./firebase-cjs");
+const fetch = require("node-fetch");
 
 // 8. Try out github actions
 // 9. Start building the real thing, starting with API's, and adding RSS where needed
