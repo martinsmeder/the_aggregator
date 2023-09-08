@@ -1,9 +1,9 @@
 name: Run Script Periodically
 
 on:
-  schedule:
-    # Run every 5th minute
-    - cron: "*/5 * * * *"
+  [push]
+  # schedule:
+  #   - cron: "*/5 * * * *" # Run every 5th minute
 
 jobs:
   run-script:
