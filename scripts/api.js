@@ -1,21 +1,53 @@
-require("dotenv").config();
-const fetch = require("node-fetch");
+// require("dotenv").config();
+// const fetch = require("node-fetch");
 
-const apiKey = process.env.NEWS_API_KEY;
+// Reuters:
+// Categories: Tech, business, science, world
+// Create one request for each page
+// Get data from successfull requests and error "no data on page" if empty
+// Combine into one array
+// Get the categories i want using filter
+// Get the data i want using map
+// Make sure I'm not getting any old data
 
-const sourceUrl = `https://newsapi.org/v2/top-headlines?sources=associated-press&apiKey=${apiKey}`;
-const categoryUrl = `https://newsapi.org/v2/top-headlines?country=us&category=technology&apiKey=${apiKey}`;
+// const apiKey = process.env.NEWS_API_KEY;
+const apiUrl = "https://newsapi.org/v2/";
+const source = "reuters";
+const apiKey = "???";
 
-fetch(categoryUrl)
-  .then((response) => response.json())
-  .then((data) => {
-    // const articleKeys = Object.keys(firstArticle);
-    // console.log(articleKeys);
-    const mapped = data.articles.map((article) => {
-      if ((article.source = "associated-press")) return article;
-    });
-    mapped.forEach((article) => console.log(article));
+function fetchPage(page) {
+  return fetch(
+    `${apiUrl}everything?sources=${source}&page=${page}&apiKey=${apiKey}`
+  ).then((response) => {
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+    return response.json();
   });
+}
 
-// id = associated-press
-// sources article = ['source', 'author', 'title', 'description', 'url', 'urlToImage', 'publishedAt', 'content']
+function fetchAllPages() {
+  let page = 1;
+  const results = [];
+
+  function fetchNextPage() {
+    return fetchPage(page).then((data) => {
+      if (data.articles.length === 0) {
+        return results;
+      }
+      results.push(data);
+      page++;
+      return fetchNextPage();
+    });
+  }
+
+  return fetchNextPage();
+}
+
+fetchAllPages()
+  .then((dataArray) => {
+    console.log("All pages fetched:", dataArray);
+  })
+  .catch((error) => {
+    console.error("Error:", error);
+  });
