@@ -1,4 +1,6 @@
-const rss = (() => {
+const fetch = require("node-fetch");
+
+const rssFeeds = (() => {
   const urls = [
     {
       category: "ai",
@@ -94,39 +96,22 @@ const rss = (() => {
       .filter((item) => new Date(item.published) > oneYearAgo)
       .map((item) => {
         const date = new Date(item.published);
-        if (isReddit) {
-          return {
-            isReddit: true,
-            id: item.id,
-            date: date.toLocaleString(),
-            title: item.title,
-            link: item.url,
-            description: item.content || "No description available",
-            source: item.category.label,
-            category: category,
-            timestamp: new Date(item.published).getTime(),
-          };
-        } else {
-          return {
-            isReddit: false,
-            date: date.toLocaleString(),
-            title: item.title,
-            link: item.url,
-            description: item.description || "No description available",
-            source: array.title,
-            category: category,
-            timestamp: new Date(item.published).getTime(),
-          };
-        }
+        return {
+          isReddit: isReddit,
+          id: item.id,
+          date: date.toLocaleString(),
+          title: item.title,
+          url: item.url,
+          description: isReddit
+            ? item.content || "No description available"
+            : item.description || "No description available",
+          source: isReddit ? item.category.label : array.title,
+          category: category,
+          timestamp: date.getTime(),
+        };
       });
 
     return parsedData;
-  }
-
-  function sort(array) {
-    const flattened = array.flat();
-    const sorted = flattened.sort((a, b) => b.date - a.date);
-    return sorted;
   }
 
   function getRssData() {
@@ -138,11 +123,13 @@ const rss = (() => {
           Promise.all(responses.map((response) => response.json()))
         )
         .then((dataArray) =>
-          sort(
-            dataArray.map((data, index) =>
+          dataArray
+            // Map each parsed data array with category and isReddit values
+            .map((data, index) =>
               parse(data, urls[index].category, urls[index].isReddit)
             )
-          )
+            // Flatten into an array of items only, instead of an array with arrays of items
+            .flat()
         )
         .then((processed) => resolve(processed))
         .catch((error) => reject(error));
@@ -155,4 +142,4 @@ const rss = (() => {
   };
 })();
 
-rss.getRssData().then((data) => console.log(data));
+module.exports = rssFeeds;
