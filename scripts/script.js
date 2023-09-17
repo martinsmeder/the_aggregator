@@ -8,82 +8,16 @@ const {
   query,
 } = require("firebase/firestore");
 const { db } = require("./firebase-cjs");
-const fetch = require("node-fetch");
+const rssFeeds = require("./rss");
 
-const rss = (() => {
-  const urls = [
-    { category: "ai", url: "https://www.deepmind.com/blog/rss.xml" },
-    {
-      category: "ai",
-      url: "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
-    },
-  ];
-
-  function getPromises() {
-    const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-    const promises = urls.map((source) => fetch(api + source.url));
-    return promises;
-  }
-
-  function getOneYearAgo() {
-    const today = new Date();
-    const oneYearAgo = new Date(
-      today.getFullYear() - 1,
-      today.getMonth(),
-      today.getDate()
-    );
-    return oneYearAgo;
-  }
-
-  function parse(array, category) {
-    const oneYearAgo = getOneYearAgo();
-    const parsedData = array.items
-      .filter((item) => new Date(item.published) > oneYearAgo)
-      .map((item) => {
-        const date = new Date(item.published);
-        return {
-          date: date.toLocaleString(),
-          title: item.title,
-          link: item.link,
-          description: item.description || "No description available",
-          source: array.title,
-          category: category,
-          timestamp: new Date(item.published).getTime(),
-        };
-      });
-
-    return parsedData;
-  }
-
-  function sort(array) {
-    const flattened = array.flat();
-    const sorted = flattened.sort((a, b) => b.date - a.date);
-    return sorted;
-  }
-
-  function getRssData() {
-    return new Promise((resolve, reject) => {
-      const promises = getPromises();
-
-      Promise.all(promises)
-        .then((responses) =>
-          Promise.all(responses.map((response) => response.json()))
-        )
-        .then((dataArray) =>
-          sort(
-            dataArray.map((data, index) => parse(data, urls[index].category))
-          )
-        )
-        .then((processed) => resolve(processed))
-        .catch((error) => reject(error));
-    });
-  }
-
-  return {
-    getOneYearAgo,
-    getRssData,
-  };
-})();
+// 1. Change to use of ID's instead
+// 2. Check other things to change
+// 3. Make query into 1000
+// 4. Delete data from database
+// 5. Try the entire script
+// 6. Check that duplication avoidance and automatic removal works
+// 7. Simple UI check with DOM methods
+// 8. Proceed with objects
 
 const firestore = (() => {
   const existingTitles = [];
@@ -178,4 +112,6 @@ const script = (() => {
   };
 })();
 
-script.init();
+// script.init();
+
+// rssFeeds.getRssData().then((data) => console.log(data));
