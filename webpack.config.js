@@ -2,7 +2,7 @@ const path = require("path");
 const Dotenv = require("dotenv-webpack");
 
 module.exports = {
-  entry: "./src/script.js",
+  entry: "./src/render.js",
   devtool: "inline-source-map", // Enable multi-file debugging
   plugins: [new Dotenv()],
   output: {
