@@ -1,57 +1,44 @@
-// // Query the "ai" collection, order by the "date" field in descending order
-// const q = query(collection(db, "ai"), orderBy("date", "desc"));
+import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { db } from "./firebase";
 
-// // Fetch the documents and render them
-// getDocs(q)
-//   .then((querySnapshot) => {
-//     // Get the container element
-//     const itemContainer = document.getElementById("itemContainer");
+// What's going on with the reddit data?
+// Should I really use worldNews, as they seem to be spamming content?
+// Use same file for imports or no?
 
-//     // Convert the stored date string to a JavaScript Date object and then sort
-//     const sortedDocs = querySnapshot.docs.sort((a, b) => {
-//       const dateA = new Date(a.data().date);
-//       const dateB = new Date(b.data().date);
-//       return dateB - dateA; // Sort in descending order
-//     });
+function queryItems(order, itemLimit) {
+  const collectionRef = collection(db, "all-items");
+  const q = query(collectionRef, orderBy("timestamp", order), limit(itemLimit));
 
-//     // Iterate through the query snapshot and render documents
-//     sortedDocs.forEach((doc) => {
-//       const documentData = doc.data();
+  return getDocs(q);
+}
 
-//       // Create a new <div> element for each item
-//       const itemElement = document.createElement("div");
-//       itemElement.classList.add("item"); // Optional: Add a CSS class for styling
+function renderItems() {
+  queryItems("desc", 500)
+    .then((querySnapshot) => {
+      const itemContainer = document.getElementById("itemContainer");
+      itemContainer.innerHTML = "";
 
-//       // Create elements for each property and set their content
-//       const titleElement = document.createElement("h2");
-//       titleElement.textContent = documentData.title;
+      querySnapshot.forEach((doc) => {
+        const item = doc.data();
+        const itemElement = document.createElement("div");
+        itemElement.innerHTML = `
+        <div>
+          <h3>${item.title}</h3>
+          <p>Date: ${item.date}</p>
+          <p>Description: ${item.description}</p>
+          <p>Source: ${item.source}</p>
+          <p>Category: ${item.category}</p>
+          <a href="${item.url}" target="_blank">Read more</a>
+        </div>
+        <hr>
+      `;
 
-//       const linkElement = document.createElement("a");
-//       linkElement.href = documentData.link;
-//       linkElement.target = "_blank";
-//       linkElement.textContent = "Read more";
+        itemContainer.appendChild(itemElement);
+      });
+    })
+    .catch((error) => {
+      console.error("Error fetching and rendering items:", error);
+    });
+}
 
-//       const descriptionElement = document.createElement("p");
-//       descriptionElement.textContent = documentData.description;
-
-//       const sourceElement = document.createElement("p");
-//       sourceElement.textContent = "Source: " + documentData.source;
-
-//       const dateElement = document.createElement("p");
-//       const formattedDate = documentData.date.toDate().toLocaleString();
-//       dateElement.textContent = "Date: " + formattedDate;
-
-//       // Append the elements to the item container
-//       itemElement.appendChild(titleElement);
-//       itemElement.appendChild(linkElement);
-//       itemElement.appendChild(descriptionElement);
-//       itemElement.appendChild(sourceElement);
-//       itemElement.appendChild(dateElement);
-
-//       // Append the item element to the container
-//       itemContainer.appendChild(itemElement);
-//     });
-//   })
-//   .catch((error) => {
-//     console.error("Error fetching and rendering documents:", error);
-//   });
+document.addEventListener("DOMContentLoaded", renderItems);

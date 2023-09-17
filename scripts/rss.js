@@ -98,7 +98,9 @@ const rssFeeds = (() => {
         const date = new Date(item.published);
         return {
           isReddit: isReddit,
-          id: item.id,
+          id: isReddit
+            ? `${item.category.label}: ${item.id} `
+            : `${array.title}: ${item.id}`,
           date: date.toLocaleString(),
           title: item.title,
           url: item.url,
