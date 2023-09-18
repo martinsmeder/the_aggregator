@@ -61,8 +61,8 @@ const firestore = (() => {
   };
 })();
 
-const script = (() => {
-  function queryAndDelete() {
+const scriptRunner = (() => {
+  function queryAndDelete(firestore) {
     return firestore
       .queryItems("asc", 1000)
       .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
@@ -70,7 +70,7 @@ const script = (() => {
       .catch((error) => console.error(`Error: ${error}`));
   }
 
-  function addRssData() {
+  function addRssData(firestore, rssFeeds) {
     return firestore
       .queryItems("desc", 1000)
       .then((querySnapshot) => {
@@ -86,10 +86,10 @@ const script = (() => {
   }
 
   function init() {
-    queryAndDelete()
+    queryAndDelete(firestore)
       .then((result) => {
         console.log(result);
-        return addRssData();
+        return addRssData(firestore, rssFeeds);
       })
       .then((result) => {
         console.log(result);
@@ -100,8 +100,12 @@ const script = (() => {
   }
 
   return {
+    queryAndDelete,
+    addRssData,
     init,
   };
 })();
 
-script.init();
+scriptRunner.init();
+
+module.exports = scriptRunner;
