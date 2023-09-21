@@ -8,13 +8,14 @@ const {
   query,
 } = require("firebase/firestore");
 const { db } = require("./firebase-cjs");
+const { testDb } = require("./firebase-test-cjs");
 const rssFeeds = require("./rss");
 
 const firestore = (() => {
   const existingIds = [];
 
-  function queryItems(order, itemLimit) {
-    const collectionRef = collection(db, "all-items");
+  function queryItems(database, order, itemLimit) {
+    const collectionRef = collection(database, "all-items");
     const q = query(
       collectionRef,
       orderBy("timestamp", order),
@@ -42,9 +43,9 @@ const firestore = (() => {
     const writePromises = [];
 
     processedData.forEach((item) => {
-      if (!existingIds.includes(item.id)) {
+      if (!existingIds.includes(item.rssId)) {
         const promise = addDoc(collection(db, "all-items"), item).catch(
-          (error) => console.log(`Error writing ${item.id}: ${error}`)
+          (error) => console.log(`Error writing ${item.rssId}: ${error}`)
         );
         writePromises.push(promise);
       }
@@ -62,20 +63,20 @@ const firestore = (() => {
 })();
 
 const scriptRunner = (() => {
-  function queryAndDelete(firestore) {
+  function queryAndDelete(database) {
     return firestore
-      .queryItems("asc", 1000)
+      .queryItems(database, "asc", 500)
       .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
       .then(() => "Old data successfully deleted.")
       .catch((error) => console.error(`Error: ${error}`));
   }
 
-  function addRssData(firestore, rssFeeds) {
+  function addRssData(database) {
     return firestore
-      .queryItems("desc", 1000)
+      .queryItems(database, "desc", 500)
       .then((querySnapshot) => {
         querySnapshot.docs.forEach((doc) =>
-          firestore.existingIds.push(doc.data().id)
+          firestore.existingIds.push(doc.data().rssId)
         );
         return rssFeeds.getRssData();
       })
@@ -85,11 +86,11 @@ const scriptRunner = (() => {
       .catch((error) => console.error(`Error: ${error}`));
   }
 
-  function init() {
-    queryAndDelete(firestore)
+  function init(database) {
+    queryAndDelete(database)
       .then((result) => {
         console.log(result);
-        return addRssData(firestore, rssFeeds);
+        return addRssData(database);
       })
       .then((result) => {
         console.log(result);
@@ -106,6 +107,7 @@ const scriptRunner = (() => {
   };
 })();
 
-scriptRunner.init();
+scriptRunner.init(db);
+// scriptRunner.init(testDb);
 
-module.exports = scriptRunner;
+module.exports = { scriptRunner, firestore };
