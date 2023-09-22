@@ -7,8 +7,7 @@ const {
   orderBy,
   query,
 } = require("firebase/firestore");
-const { db } = require("./firebase-cjs");
-const { testDb } = require("./firebase-test-cjs");
+// const { db } = require("./firebase-cjs");
 const rssFeeds = require("./rss");
 
 const firestore = (() => {
@@ -39,12 +38,12 @@ const firestore = (() => {
     return Promise.all(deletionPromises);
   }
 
-  function addToFirestore(processedData) {
+  function addToFirestore(database, processedData) {
     const writePromises = [];
 
     processedData.forEach((item) => {
       if (!existingIds.includes(item.rssId)) {
-        const promise = addDoc(collection(db, "all-items"), item).catch(
+        const promise = addDoc(collection(database, "all-items"), item).catch(
           (error) => console.log(`Error writing ${item.rssId}: ${error}`)
         );
         writePromises.push(promise);
@@ -54,11 +53,19 @@ const firestore = (() => {
     return Promise.all(writePromises);
   }
 
+  function clearFirestore(querySnapshot) {
+    const deletionPromises = querySnapshot.docs.map((doc) =>
+      deleteDoc(doc.ref)
+    );
+    return Promise.all(deletionPromises);
+  }
+
   return {
     existingIds,
     queryItems,
     deleteOldData,
     addToFirestore,
+    clearFirestore,
   };
 })();
 
@@ -80,7 +87,9 @@ const scriptRunner = (() => {
         );
         return rssFeeds.getRssData();
       })
-      .then((processedData) => firestore.addToFirestore(processedData))
+      .then((processedData) =>
+        firestore.addToFirestore(database, processedData)
+      )
       .then(() => (firestore.existingIds.length = 0))
       .then(() => "New data successfully added.")
       .catch((error) => console.error(`Error: ${error}`));
@@ -107,7 +116,6 @@ const scriptRunner = (() => {
   };
 })();
 
-scriptRunner.init(db);
-// scriptRunner.init(testDb);
+// scriptRunner.init(db);
 
 module.exports = { scriptRunner, firestore };

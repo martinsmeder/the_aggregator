@@ -2,11 +2,11 @@ const fetch = require("node-fetch");
 
 const rssFeeds = (() => {
   const urls = [
-    {
-      category: "ai",
-      url: "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
-      isReddit: false,
-    },
+    // {
+    //   category: "ai",
+    //   url: "https://news.mit.edu/topic/mitmachine-learning-rss.xml",
+    //   isReddit: false,
+    // },
     {
       category: "ai",
       url: "https://www.deepmind.com/blog/rss.xml",
@@ -17,11 +17,11 @@ const rssFeeds = (() => {
     //   url: "http://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml",
     //   isReddit: false,
     // },
-    {
-      category: "ai",
-      url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
-      isReddit: true,
-    },
+    // {
+    //   category: "ai",
+    //   url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
+    //   isReddit: true,
+    // },
     // {
     //   category: "programming",
     //   url: "https://www.reddit.com/r/programming/top/.rss?limit=500",
@@ -98,7 +98,7 @@ const rssFeeds = (() => {
   function parse(array, category, isReddit) {
     const oneYearAgo = getOneYearAgo();
     const parsedData = array.items
-      .filter((item) => new Date(item.published) > oneYearAgo)
+      // .filter((item) => new Date(item.published) > oneYearAgo)
       .map((item) => {
         const date = new Date(item.published);
         return {
