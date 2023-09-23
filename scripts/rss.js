@@ -17,11 +17,6 @@ const rssFeeds = (() => {
       url: "http://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml",
       isReddit: false,
     },
-    {
-      category: "ai",
-      url: "https://www.notaworkingwebsite.com/blog/rss",
-      isReddit: false,
-    },
     // {
     //   category: "ai",
     //   url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
@@ -84,9 +79,14 @@ const rssFeeds = (() => {
     // },
   ];
 
-  function getPromises() {
+  function getPromises(urls) {
     const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-    const promises = urls.map((source) => fetch(api + source.url));
+    const promises = urls.map((source) => {
+      return fetch(api + source.url).then((response) => {
+        if (response.ok) return response;
+        else return null;
+      });
+    });
     return promises;
   }
 
@@ -126,14 +126,17 @@ const rssFeeds = (() => {
     return parsedData;
   }
 
-  function getRssData() {
+  function getRssData(urls) {
     return new Promise((resolve, reject) => {
-      const promises = getPromises();
+      const promises = getPromises(urls);
 
       Promise.all(promises)
-        .then((responses) =>
-          Promise.all(responses.map((response) => response.json()))
-        )
+        .then((responses) => {
+          // Filter out null responses
+          const filtered = responses.filter((response) => response);
+          // Return an array of responses converted to json format
+          return Promise.all(filtered.map((response) => response.json()));
+        })
         .then((dataArray) =>
           dataArray
             // Map each parsed data array with category and isReddit values
@@ -149,16 +152,14 @@ const rssFeeds = (() => {
   }
 
   return {
+    urls,
     getPromises,
     getOneYearAgo,
     getRssData,
   };
 })();
 
-const promises = rssFeeds.getPromises();
-
-Promise.allSettled(promises).then((responses) =>
-  responses.forEach((response) => console.log(response))
-);
+// Case 1: The website does not exist --> Solved
+// Case 2: The website does exist but does not contain rss data
 
 module.exports = rssFeeds;
