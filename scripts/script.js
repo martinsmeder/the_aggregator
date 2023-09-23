@@ -13,6 +13,10 @@ const rssFeeds = require("./rss");
 const firestore = (() => {
   const existingIds = [];
 
+  function setExistingIds(querySnapshot) {
+    querySnapshot.docs.forEach((doc) => existingIds.push(doc.data().rssId));
+  }
+
   function queryItems(database, order, itemLimit) {
     const collectionRef = collection(database, "all-items");
     const q = query(
@@ -62,6 +66,7 @@ const firestore = (() => {
 
   return {
     existingIds,
+    setExistingIds,
     queryItems,
     deleteOldData,
     addToFirestore,
@@ -82,9 +87,7 @@ const scriptRunner = (() => {
     return firestore
       .queryItems(database, "desc", 500)
       .then((querySnapshot) => {
-        querySnapshot.docs.forEach((doc) =>
-          firestore.existingIds.push(doc.data().rssId)
-        );
+        firestore.setExistingIds(querySnapshot);
         return rssFeeds.getRssData();
       })
       .then((processedData) =>
