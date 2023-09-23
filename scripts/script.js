@@ -88,7 +88,7 @@ const scriptRunner = (() => {
       .queryItems(database, "desc", 500)
       .then((querySnapshot) => {
         firestore.setExistingIds(querySnapshot);
-        return rssFeeds.getRssData();
+        return rssFeeds.getRssData(rssFeeds.urls);
       })
       .then((processedData) =>
         firestore.addToFirestore(database, processedData)
