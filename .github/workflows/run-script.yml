@@ -1,17 +1,17 @@
-# name: Run Script Periodically
+name: Run Script Periodically
 
-# on:
-#   schedule:
-#     - cron: "0 0 * * *"
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
-# jobs:
-#   run-script:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v3
-#       - uses: actions/setup-node@v3
-#         with:
-#           node-version: "14"
-#       - run: npm install
-#       - run: node scripts/script.js
-#       - run: echo "Job ran!"
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+      - run: npm install
+      - run: node scripts/script.js
+      - run: echo "Job ran!"

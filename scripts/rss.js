@@ -17,71 +17,62 @@ const rssFeeds = (() => {
       url: "http://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml",
       isReddit: false,
     },
-    // {
-    //   category: "ai",
-    //   url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
-    //   isReddit: true,
-    // },
-    // {
-    //   category: "programming",
-    //   url: "https://www.reddit.com/r/programming/top/.rss?limit=500",
-    //   isReddit: true,
-    // },
-    // {
-    //   category: "programming",
-    //   url: "http://blog.stackoverflow.com/feed/",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "programming",
-    //   url: "http://githubengineering.com/atom.xml",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "science",
-    //   url: "https://www.reddit.com/r/science/top/.rss?limit=500",
-    //   isReddit: true,
-    // },
-    // {
-    //   category: "science",
-    //   url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/science/nature/rss.xml",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "science",
-    //   url: "http://www.sciencedaily.com/rss/mind_brain/neuroscience.xml",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "business",
-    //   url: "https://www.reddit.com/r/business/top/.rss?limit=500",
-    //   isReddit: true,
-    // },
-    // {
-    //   category: "business",
-    //   url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/business/rss.xml",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "business",
-    //   url: "http://www.forbes.com/entrepreneurs/index.xml",
-    //   isReddit: false,
-    // },
-    // {
-    //   category: "world",
-    //   url: "https://www.reddit.com/r/worldnews/top/.rss?limit=500",
-    //   isReddit: true,
-    // },
-    // {
-    //   category: "world",
-    //   url: "http://feeds.bbci.co.uk/news/world/rss.xml",
-    //   isReddit: false,
-    // },
+    {
+      category: "ai",
+      url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
+      isReddit: true,
+    },
+    {
+      category: "programming",
+      url: "https://www.reddit.com/r/programming/top/.rss?limit=500",
+      isReddit: true,
+    },
+    {
+      category: "programming",
+      url: "http://blog.stackoverflow.com/feed/",
+      isReddit: false,
+    },
+    {
+      category: "programming",
+      url: "http://githubengineering.com/atom.xml",
+      isReddit: false,
+    },
+    {
+      category: "science",
+      url: "https://www.reddit.com/r/science/top/.rss?limit=500",
+      isReddit: true,
+    },
+    {
+      category: "science",
+      url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/science/nature/rss.xml",
+      isReddit: false,
+    },
+    {
+      category: "science",
+      url: "http://www.sciencedaily.com/rss/mind_brain/neuroscience.xml",
+      isReddit: false,
+    },
+    {
+      category: "business",
+      url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/business/rss.xml",
+      isReddit: false,
+    },
+    {
+      category: "business",
+      url: "http://www.forbes.com/entrepreneurs/index.xml",
+      isReddit: false,
+    },
+    {
+      category: "world",
+      url: "http://feeds.bbci.co.uk/news/world/rss.xml",
+      isReddit: false,
+    },
   ];
 
   function getPromises(urls) {
     const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
     const promises = urls.map((source) => {
+      // Create an array of promises by fetching each source in urls array
       return fetch(api + source.url).then((response) => {
         if (response.ok) return response;
         else return null;
@@ -158,8 +149,5 @@ const rssFeeds = (() => {
     getRssData,
   };
 })();
-
-// Case 1: The website does not exist --> Solved
-// Case 2: The website does exist but does not contain rss data
 
 module.exports = rssFeeds;

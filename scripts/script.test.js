@@ -1,8 +1,9 @@
-const { scriptRunner, firestore } = require("./script");
+const firestore = require("./script");
 const { testDb } = require("./firebase-test-cjs");
 
 // HOW TO TEST:
 // * Make sure database is empty before running tests
+// * Comment out { db } import in script.js
 // * Uncomment and run one test at a time
 // * If a test fails, the information will be shown as a console.error, even though the test
 //   "passed"

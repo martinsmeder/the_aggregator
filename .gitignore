@@ -3,4 +3,5 @@ node_modules
 .eslintrc.json
 .prettierrc
 todo.txt
+problems-solutions.txt
 .env
