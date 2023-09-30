@@ -91,18 +91,21 @@ const scriptRunner = (() => {
   }
 
   function addRssData(database) {
-    return firestore
-      .queryItems(database, "desc", 4000)
-      .then((querySnapshot) => {
-        firestore.setExistingIds(querySnapshot);
-        return rssFeeds.getRssData(rssFeeds.urls);
-      })
-      .then((processedData) =>
-        firestore.addToFirestore(database, processedData)
-      )
-      .then(() => (firestore.existingIds.length = 0))
-      .then(() => "New data successfully added.")
-      .catch((error) => console.error(`Error: ${error}`));
+    return (
+      firestore
+        .queryItems(database, "desc", 4000)
+        .then((querySnapshot) => {
+          firestore.setExistingIds(querySnapshot);
+          return rssFeeds.getRssData(rssFeeds.urls);
+        })
+        .then((processedData) =>
+          firestore.addToFirestore(database, processedData)
+        )
+        // eslint-disable-next-line no-return-assign
+        .then(() => (firestore.existingIds.length = 0))
+        .then(() => "New data successfully added.")
+        .catch((error) => console.error(`Error: ${error}`))
+    );
   }
 
   function init(database) {

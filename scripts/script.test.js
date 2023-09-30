@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const firestore = require("./script");
 const { testDb } = require("./firebase-test-cjs");
 
