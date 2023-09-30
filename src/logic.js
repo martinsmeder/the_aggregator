@@ -73,5 +73,12 @@ firebase
   .then((querySnapshot) => {
     console.log("Second: ");
     querySnapshot.forEach((doc) => console.log(doc.data().title));
+    return firebase.getCategoryQuery(testDb, "ai", querySnapshot);
+  })
+  .then((querySnapshot) => {
+    console.log("Third: ");
+    querySnapshot.forEach((doc) => console.log(doc.data().title));
   })
   .catch((error) => console.error(error));
+
+export default firebase;
