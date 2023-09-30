@@ -69,15 +69,16 @@ const rssFeeds = (() => {
     },
   ];
 
+  // eslint-disable-next-line no-shadow
   function getPromises(urls) {
     const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-    const promises = urls.map((source) => {
+    const promises = urls.map((source) =>
       // Create an array of promises by fetching each source in urls array
-      return fetch(api + source.url).then((response) => {
+      fetch(api + source.url).then((response) => {
         if (response.ok) return response;
-        else return null;
-      });
-    });
+        return null;
+      })
+    );
     return promises;
   }
 
@@ -98,7 +99,8 @@ const rssFeeds = (() => {
       .map((item) => {
         const date = new Date(item.published);
         return {
-          isReddit: isReddit,
+          magazineView: true,
+          isReddit,
           rssId: isReddit
             ? `${item.category.label}: ${item.url} `
             : `${array.title}: ${item.url}`,
@@ -109,7 +111,7 @@ const rssFeeds = (() => {
             ? item.content || "No description available"
             : item.description || "No description available",
           source: isReddit ? item.category.label : array.title,
-          category: category,
+          category,
           timestamp: date.getTime(),
         };
       });
@@ -117,6 +119,7 @@ const rssFeeds = (() => {
     return parsedData;
   }
 
+  // eslint-disable-next-line no-shadow
   function getRssData(urls) {
     return new Promise((resolve, reject) => {
       const promises = getPromises(urls);
