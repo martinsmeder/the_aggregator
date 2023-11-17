@@ -1,15 +1,8 @@
 name: Run Script Periodically
 
-# midnight
-# on:
-#   schedule:
-#     - cron: '0 0 * * *'
-
-# push
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   run-script:
@@ -18,7 +11,7 @@ jobs:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
         with:
-          node-version: '14'
+          node-version: "14"
       - run: npm install
-      - run: node backend/scripts/script.js
+      - run: node scripts/script.js
       - run: echo "Job ran!"

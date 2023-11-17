@@ -1,0 +1,37 @@
+========================== GENERAL PLAN: ===============================
+
+1. Fetch and Store Data:
+Learn how to work with arrays, functions, and asynchronous programming, 
+which will help you fetch and process data from both RSS feeds and APIs,
+and store it in Firestore.
+
+2. App-Logic with Categorization and Search:
+Dive into objects, which will help you organize the data and implement 
+features like categorization and search functionality. No need for an UI 
+yet. 
+
+3. UI with React:
+Once you have the app-logic in place, learn React to build the frontend UI, 
+taking advantage of its component-based structure and state management.
+
+========================== DETAILED PLAN: ===============================
+
+GOAL: MAKE INTERESTING INFORMATION ACCESSIBLE EASILY IN ONE PLACE
+
+Remember to use test database when testing!
+1. Render 10 items 
+2. Render 10 more items while keeping the first 10 items rendered
+3. So on and so forth 
+4. Categorization
+
+Things to do:
+* Get react and vite into this project 
+* Logic for loading x amount of extra items, and add to state 
+* Think about platonic ideal app 
+* Figure out the amount of AI resources that are available for free (most likely
+  summarization), and how to best implement it in my app
+* Establish first principles (budget, goal/ideal, time, resources, etc)
+* Create a plan that is grounded in first principles and that leads to the best 
+  possible solution with the freely available resources
+
+
