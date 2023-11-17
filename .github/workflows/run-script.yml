@@ -1,15 +1,8 @@
 name: Run Script Periodically
 
-# midnight
-# on:
-#   schedule:
-#     - cron: '0 0 * * *'
-
-# push
 on:
-  push:
-    branches:
-      - main
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   run-script:

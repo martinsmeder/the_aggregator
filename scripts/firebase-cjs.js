@@ -2,7 +2,7 @@ const { initializeApp } = require("firebase/app");
 const { getFirestore } = require("firebase/firestore");
 
 const firebaseConfig = {
-  apiKey: process.env.FIREBASE_API_KEY,
+  apiKey: "AIzaSyAES8iOsxtgQhNved5dltrilIt8X5fxHL0",
   authDomain: "the-aggregator-b51bd.firebaseapp.com",
   projectId: "the-aggregator-b51bd",
   storageBucket: "the-aggregator-b51bd.appspot.com",
