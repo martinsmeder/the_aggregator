@@ -7,7 +7,7 @@ import {
   startAfter,
   where,
 } from "firebase/firestore";
-import { testDb } from "./firebase-test";
+// import { testDb } from "./firebase-test";
 
 const firebase = (() => {
   function getLastVisible(querySnapshot) {
@@ -63,22 +63,22 @@ const firebase = (() => {
   };
 })();
 
-firebase
-  .getCategoryQuery(testDb, "ai", null)
-  .then((querySnapshot) => {
-    console.log("First: ");
-    querySnapshot.forEach((doc) => console.log(doc.data().title));
-    return firebase.getCategoryQuery(testDb, "ai", querySnapshot);
-  })
-  .then((querySnapshot) => {
-    console.log("Second: ");
-    querySnapshot.forEach((doc) => console.log(doc.data().title));
-    return firebase.getCategoryQuery(testDb, "ai", querySnapshot);
-  })
-  .then((querySnapshot) => {
-    console.log("Third: ");
-    querySnapshot.forEach((doc) => console.log(doc.data().title));
-  })
-  .catch((error) => console.error(error));
+// firebase
+//   .getCategoryQuery(testDb, "ai", null)
+//   .then((querySnapshot) => {
+//     console.log("First: ");
+//     querySnapshot.forEach((doc) => console.log(doc.data().title));
+//     return firebase.getCategoryQuery(testDb, "ai", querySnapshot);
+//   })
+//   .then((querySnapshot) => {
+//     console.log("Second: ");
+//     querySnapshot.forEach((doc) => console.log(doc.data().title));
+//     return firebase.getCategoryQuery(testDb, "ai", querySnapshot);
+//   })
+//   .then((querySnapshot) => {
+//     console.log("Third: ");
+//     querySnapshot.forEach((doc) => console.log(doc.data().title));
+//   })
+//   .catch((error) => console.error(error));
 
 export default firebase;
