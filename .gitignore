@@ -4,3 +4,4 @@ node_modules
 .prettierrc
 todo.txt
 problems-solutions.txt
+.env
