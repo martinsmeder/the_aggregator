@@ -4,7 +4,7 @@ const { testDb } = require("./firebase-test-cjs");
 
 // HOW TO TEST:
 // * Make sure database is empty before running tests
-// * Comment out { db } import in script.js
+// * Comment out { db } import (top of script.js), as well as init call (bottom of script.js)
 // * Uncomment and run one test at a time
 // * If a test fails, the information will be shown as a console.error, even though the test
 //   "passed"

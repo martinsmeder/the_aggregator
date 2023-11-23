@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const rssFeeds = require("./rss");
 
 // Remember that failed tests are shown as an error, even though the test
