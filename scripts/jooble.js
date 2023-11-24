@@ -58,3 +58,11 @@ const fetchAllData = () => {
 };
 
 fetchAllData();
+
+// Get data and parse to correct format:
+// * Get currentmonth, currentyear, amount of available jobs for each field
+// * get data from start of each month (except november)
+
+// Send to test database
+// * create separate collection for this only
+// * no need to check for duplicates or delete old data

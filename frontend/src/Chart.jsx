@@ -1,6 +1,4 @@
 // https://recharts.org/en-US/guide
-// * get both weeks and months from API calls so I can start with weeks and then
-//   switch to months when I have more data
 import {
   LineChart,
   Line,

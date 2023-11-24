@@ -37,36 +37,6 @@ const rssFeeds = (() => {
       url: "http://githubengineering.com/atom.xml",
       isReddit: false,
     },
-    {
-      category: "science",
-      url: "https://www.reddit.com/r/science/top/.rss?limit=500",
-      isReddit: true,
-    },
-    {
-      category: "science",
-      url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/science/nature/rss.xml",
-      isReddit: false,
-    },
-    {
-      category: "science",
-      url: "http://www.sciencedaily.com/rss/mind_brain/neuroscience.xml",
-      isReddit: false,
-    },
-    {
-      category: "business",
-      url: "http://newsrss.bbc.co.uk/rss/newsonline_world_edition/business/rss.xml",
-      isReddit: false,
-    },
-    {
-      category: "business",
-      url: "http://www.forbes.com/entrepreneurs/index.xml",
-      isReddit: false,
-    },
-    {
-      category: "world",
-      url: "http://feeds.bbci.co.uk/news/world/rss.xml",
-      isReddit: false,
-    },
   ];
 
   // eslint-disable-next-line no-shadow
