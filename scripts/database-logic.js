@@ -43,17 +43,19 @@ const firestore = (() => {
     return Promise.all(deletionPromises);
   }
 
-  function addToFirestore(database, processedData) {
+  function addToFirestore(database, collectionName, processedData) {
     const writePromises = [];
 
     // Iterate over the processed data items
     processedData.forEach((item) => {
       if (!existingIds.includes(item.rssId)) {
         // Create a promise to add the item to the Firestore collection
-        const promise = addDoc(collection(database, "all-items"), item).catch(
-          (error) =>
-            // If there's an error while adding, log an error message
-            console.log(`Error writing ${item.rssId}: ${error}`)
+        const promise = addDoc(
+          collection(database, collectionName),
+          item
+        ).catch((error) =>
+          // If there's an error while adding, log an error message
+          console.log(`Error writing ${item.rssId}: ${error}`)
         );
 
         writePromises.push(promise);

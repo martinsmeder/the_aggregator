@@ -20,7 +20,7 @@ const feedScript = (() => {
           return rssFeeds.getRssData(rssFeeds.urls);
         })
         .then((processedData) =>
-          firestore.addToFirestore(database, processedData)
+          firestore.addToFirestore(database, "all-items", processedData)
         )
         // eslint-disable-next-line no-return-assign
         .then(() => (firestore.existingIds.length = 0))
