@@ -41,9 +41,9 @@ const jobScript = (() => {
   };
 
   // Fetch data for all keywords in the 'keywordsList'
-  const fetchAllData = () => {
+  const fetchAllData = (arr) => {
     // Create an array of promises for fetching data for each keyword
-    const promises = keywordsList.map((keyword) => fetchData(keyword));
+    const promises = arr.map((keyword) => fetchData(keyword));
 
     // Executes all promises in parallel and waits for all of them to settle
     return Promise.allSettled(promises)
@@ -59,7 +59,7 @@ const jobScript = (() => {
         const keywordData = results.map((result, index) => {
           if (result.status === "fulfilled") {
             return {
-              name: keywordsList[index],
+              name: arr[index],
               count: result.value.totalCount || 0,
               month,
               year,
@@ -67,7 +67,7 @@ const jobScript = (() => {
             // eslint-disable-next-line no-else-return
           } else {
             return {
-              name: keywordsList[index],
+              name: arr[index],
               count: 0,
               month,
               year,
@@ -84,7 +84,7 @@ const jobScript = (() => {
 
   // Fetches data for all keywords and adds it to the Firestore database
   function init() {
-    fetchAllData()
+    fetchAllData(keywordsList)
       .then((data) =>
         // Add fetched data to the Firestore database
         firestore.addToFirestore(testDb, "jobs", data).then(() => {
@@ -96,8 +96,12 @@ const jobScript = (() => {
   }
 
   return {
+    fetchData,
+    fetchAllData,
     init,
   };
 })();
 
 jobScript.init();
+
+module.exports = jobScript;
