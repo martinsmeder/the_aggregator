@@ -1,18 +1,19 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const firestore = require("./database-logic");
-const { testDb } = require("./firebase-test-cjs");
+// const { testDb } = require("./firebase-test-cjs");
+const { db } = require("./firebase-cjs");
 
 const jobScript = (() => {
   const url = "https://jooble.org/api/";
   const key = process.env.JOOBLE_API_KEY;
 
   const keywordsList = [
-    "full stack",
-    "front end",
-    "back end",
-    "web developer",
-    "software engineer",
+    "full stack developer",
+    "front end developer",
+    "back end developer",
+    "data engineer",
+    "machine learning engineer",
   ];
   const location = "USA";
 
@@ -87,7 +88,7 @@ const jobScript = (() => {
     fetchAllData(keywordsList)
       .then((data) =>
         // Add fetched data to the Firestore database
-        firestore.addToFirestore(testDb, "jobs", data).then(() => {
+        firestore.addToFirestore(db, "jobs", data).then(() => {
           console.log("Script executed successfully."); // Log success message
         })
       )
