@@ -1,8 +1,9 @@
-name: Run Script Periodically
+name: Run Job Script Once A Month
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
 
 jobs:
   run-script:
@@ -13,5 +14,5 @@ jobs:
         with:
           node-version: "14"
       - run: npm install
-      - run: node scripts/script.js
+      - run: node scripts/job-script.js
       - run: echo "Job ran!"

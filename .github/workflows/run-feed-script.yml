@@ -1,0 +1,22 @@
+name: Run Feed Script Once A Day
+
+# on:
+#   schedule:
+#     - cron: "0 0 * * *"
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+      - run: npm install
+      - run: node scripts/feed-script.js
+      - run: echo "Job ran!"

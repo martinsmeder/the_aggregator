@@ -1,5 +1,5 @@
 // /* eslint-disable no-undef */
-// const firestore = require("./script");
+// const firestore = require("./database-logic");
 // const { testDb } = require("./firebase-test-cjs");
 
 // // HOW TO TEST:
