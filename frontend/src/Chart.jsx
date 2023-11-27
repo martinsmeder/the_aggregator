@@ -1,4 +1,4 @@
-// https://recharts.org/en-US/guide
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -8,69 +8,61 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
+import { getSingleQuery } from "./database-logic";
+import { testDb } from "./firebase-test";
 
-const data = [
-  {
-    name: "Jan (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
-  {
-    name: "Feb (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
-  {
-    name: "Mar (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
-  {
-    name: "Apr (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
-  {
-    name: "May (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
-  {
-    name: "Jun (2023)",
-    jobsField1: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    jobsField2: Math.floor(Math.random() * (500000 - 50000 + 1)) + 50000,
-    // Add more fields as needed...
-  },
+function MyChart() {
+  const [data, setData] = useState([]);
+  const [months, setMonths] = useState([]);
 
-  // Add other months...
-];
+  useEffect(() => {
+    getSingleQuery(testDb, "jobs")
+      .then((result) => result.docs.map((doc) => doc.data()))
+      .then((mapped) => {
+        // Reduce the fetched data to transform it into a suitable format for Recharts
+        const chartData = mapped.reduce((acc, item) => {
+          // Generate a unique key for each combination of month and year
+          const key = `${item.month}-${item.year}`;
+          // Initialize the entry for the key in the accumulator or use an existing entry
+          acc[key] = acc[key] || { name: key };
+          // Store the count of each item name within its respective month-year entry
+          acc[key][item.name] = item.count;
 
-const MyChart = () => (
-  <LineChart width={700} height={400} data={data}>
-    <XAxis dataKey="name" />
-    <YAxis />
-    <CartesianGrid stroke="#eee" />
-    <Tooltip />
-    <Legend />
-    <Line
-      type="monotone"
-      dataKey="jobsField1"
-      stroke="#8884d8"
-      name="Front End"
-    />
-    <Line
-      type="monotone"
-      dataKey="jobsField2"
-      stroke="#82ca9d"
-      name="Back End"
-    />
-    {/* Add more <Line /> components for additional fields */}
-  </LineChart>
-);
+          return acc;
+        }, {}); // Initial empty object for the accumulator
+
+        const uniqueMonths = Object.keys(chartData);
+        const finalData = Object.values(chartData);
+
+        setMonths(uniqueMonths);
+        setData(finalData);
+      })
+      .catch((error) => console.error(error));
+  }, []);
+
+  return (
+    <LineChart width={700} height={400} data={data}>
+      <XAxis dataKey="name" tickCount={months.length} />
+      <YAxis />
+      <CartesianGrid stroke="#eee" />
+      <Tooltip />
+      <Legend />
+
+      {Object.keys(data[0] || {})
+        // Filter out keys that are not needed for rendering lines in the chart
+        .filter((key) => !["name", "month", "year"].includes(key))
+        // Map each relevant key to a Line component for rendering in the chart
+        .map((key) => (
+          <Line
+            key={key}
+            type="monotone"
+            dataKey={key}
+            name={key}
+            stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+          />
+        ))}
+    </LineChart>
+  );
+}
 
 export default MyChart;
