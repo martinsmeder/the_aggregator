@@ -1,13 +1,37 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
+const summarize = require("./huggingface");
 
 const apiKey = process.env.NEWS_API_KEY;
 
-const url = `https://newsapi.org/v2/top-headlines/sources?country=us&apiKey=${apiKey}`;
+const apiUrl = `https://newsapi.org/v2/top-headlines?sources=associated-press&apiKey=${apiKey}`;
 
-fetch(url)
-  .then((response) => response.json())
-  .then((data) => data.sources.forEach((source) => console.log(source)));
+function parse(arr) {
+  return arr.map((item) => ({
+    source: item.source.name,
+    title: item.title,
+    url: item.url,
+    image: item.urlToImage,
+    published: item.publishedAt,
+    content: item.content,
+  }));
+}
+
+function getNewsData(url) {
+  return fetch(url)
+    .then((response) => response.json())
+    .then((json) => json.articles)
+    .then((articles) => parse(articles))
+    .catch((error) => console.error(error));
+}
+
+getNewsData(apiUrl)
+  .then((result) => summarize({ inputs: result[0].content }))
+  .then((response) => console.log(JSON.stringify(response)));
+
+// getNewsData(apiUrl)
+//   .then((result) => summarize({ inputs: result[0].content }))
+//   .then((response) => console.log(JSON.stringify(response)));
 
 // ============================ ID's to filter ===============================
 //   abc-news (7/10 - General news)
