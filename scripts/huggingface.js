@@ -16,31 +16,80 @@ function summarize(data) {
 
 // summarize({
 //   inputs: `
-//   Nucleotides are organic molecules composed of a nitrogenous base, a pentose sugar and a phosphate. They serve as monomeric units of the nucleic acid polymers – deoxyribonucleic acid (DNA) and ribonucleic acid (RNA), both of which are essential biomolecules within all life-forms on Earth. Nucleotides are obtained in the diet and are also synthesized from common nutrients by the liver.[1]
+//   A quick scan of the headlines makes it seem like generative artificial intelligence is everywhere these days. In fact, some of those headlines may actually have been written by generative AI, like OpenAI’s ChatGPT, a chatbot that has demonstrated an uncanny ability to produce text that seems to have been written by a human.
 
-//   Nucleotides are composed of three subunit molecules: a nucleobase, a five-carbon sugar (ribose or deoxyribose), and a phosphate group consisting of one to three phosphates. The four nucleobases in DNA are guanine, adenine, cytosine and thymine; in RNA, uracil is used in place of thymine.
+// But what do people really mean when they say “generative AI?”
 
-//   Nucleotides also play a central role in metabolism at a fundamental, cellular level. They provide chemical energy—in the form of the nucleoside triphosphates, adenosine triphosphate (ATP), guanosine triphosphate (GTP), cytidine triphosphate (CTP) and uridine triphosphate (UTP)—throughout the cell for the many cellular functions that demand energy, including: amino acid, protein and cell membrane synthesis, moving the cell and cell parts (both internally and intercellularly), cell division, etc.[2] In addition, nucleotides participate in cell signaling (cyclic guanosine monophosphate or cGMP and cyclic adenosine monophosphate or cAMP), and are incorporated into important cofactors of enzymatic reactions (e.g. coenzyme A, FAD, FMN, NAD, and NADP+).
+// Before the generative AI boom of the past few years, when people talked about AI, typically they were talking about machine-learning models that can learn to make a prediction based on data. For instance, such models are trained, using millions of examples, to predict whether a certain X-ray shows signs of a tumor or if a particular borrower is likely to default on a loan.
 
-//   In experimental biochemistry, nucleotides can be radiolabeled using radionuclides to yield radionucleotides.
+// Generative AI can be thought of as a machine-learning model that is trained to create new data, rather than making a prediction about a specific dataset. A generative AI system is one that learns to generate more objects that look like the data it was trained on.
 
-//   5-nucleotides are also used in flavour enhancers as food additive to enhance the umami taste, often in the form of a yeast extract.[3]
+// “When it comes to the actual machinery underlying generative AI and other types of AI, the distinctions can be a little bit blurry. Oftentimes, the same algorithms can be used for both,” says Phillip Isola, an associate professor of electrical engineering and computer science at MIT, and a member of the Computer Science and Artificial Intelligence Laboratory (CSAIL).
 
-//   Structure
+// And despite the hype that came with the release of ChatGPT and its counterparts, the technology itself isn’t brand new. These powerful machine-learning models draw on research and computational advances that go back more than 50 years.
 
-//   Showing the arrangement of nucleotides within the structure of nucleic acids: At lower left, a monophosphate nucleotide; its nitrogenous base represents one side of a base-pair. At the upper right, four nucleotides form two base-pairs: thymine and adenine (connected by double hydrogen bonds) and guanine and cytosine (connected by triple hydrogen bonds). The individual nucleotide monomers are chain-joined at their sugar and phosphate molecules, forming two 'backbones' (a double helix) of nucleic acid, shown at upper left.
-//   A nucleotide is composed of three distinctive chemical sub-units: a five-carbon sugar molecule, a nucleobase (the two of which together are called a nucleoside), and one phosphate group. With all three joined, a nucleotide is also termed a "nucleoside monophosphate", "nucleoside diphosphate" or "nucleoside triphosphate", depending on how many phosphates make up the phosphate group.
+// An increase in complexity
 
-//   In nucleic acids, nucleotides contain either a purine or a pyrimidine base—i.e., the nucleobase molecule, also known as a nitrogenous base—and are termed ribonucleotides if the sugar is ribose, or deoxyribonucleotides if the sugar is deoxyribose. Individual phosphate molecules repetitively connect the sugar-ring molecules in two adjacent nucleotide monomers, thereby connecting the nucleotide monomers of a nucleic acid end-to-end into a long chain. These chain-joins of sugar and phosphate molecules create a 'backbone' strand for a single- or double helix. In any one strand, the chemical orientation (directionality) of the chain-joins runs from the 5'-end to the 3'-end (read: 5 prime-end to 3 prime-end)—referring to the five carbon sites on sugar molecules in adjacent nucleotides. In a double helix, the two strands are oriented in opposite directions, which permits base pairing and complementarity between the base-pairs, all which is essential for replicating or transcribing the encoded information found in DNA.
+// An early example of generative AI is a much simpler model known as a Markov chain. The technique is named for Andrey Markov, a Russian mathematician who in 1906 introduced this statistical method to model the behavior of random processes. In machine learning, Markov models have long been used for next-word prediction tasks, like the autocomplete function in an email program.
 
-//   Nucleic acids then are polymeric macromolecules assembled from nucleotides, the monomer-units of nucleic acids. The purine bases adenine and guanine and pyrimidine base cytosine occur in both DNA and RNA, while the pyrimidine bases thymine (in DNA) and uracil (in RNA) occur in just one. Adenine forms a base pair with thymine with two hydrogen bonds, while guanine pairs with cytosine with three hydrogen bonds.
+// In text prediction, a Markov model generates the next word in a sentence by looking at the previous word or a few previous words. But because these simple models can only look back that far, they aren’t good at generating plausible text, says Tommi Jaakkola, the Thomas Siebel Professor of Electrical Engineering and Computer Science at MIT, who is also a member of CSAIL and the Institute for Data, Systems, and Society (IDSS).
 
-//   In addition to being building blocks for the construction of nucleic acid polymers, singular nucleotides play roles in cellular energy storage and provision, cellular signaling, as a source of phosphate groups used to modulate the activity of proteins and other signaling molecules, and as enzymatic cofactors, often carrying out redox reactions. Signaling cyclic nucleotides are formed by binding the phosphate group twice to the same sugar molecule, bridging the 5'- and 3'- hydroxyl groups of the sugar.[2] Some signaling nucleotides differ from the standard single-phosphate group configuration, in having multiple phosphate groups attached to different positions on the sugar.[4] Nucleotide cofactors include a wider range of chemical groups attached to the sugar via the glycosidic bond, including nicotinamide and flavin, and in the latter case, the ribose sugar is linear rather than forming the ring seen in other nucleotides.
+// “We were generating things way before the last decade, but the major distinction here is in terms of the complexity of objects we can generate and the scale at which we can train these models,” he explains.
+
+// Just a few years ago, researchers tended to focus on finding a machine-learning algorithm that makes the best use of a specific dataset. But that focus has shifted a bit, and many researchers are now using larger datasets, perhaps with hundreds of millions or even billions of data points, to train models that can achieve impressive results.
+
+// The base models underlying ChatGPT and similar systems work in much the same way as a Markov model. But one big difference is that ChatGPT is far larger and more complex, with billions of parameters. And it has been trained on an enormous amount of data — in this case, much of the publicly available text on the internet.
+
+// In this huge corpus of text, words and sentences appear in sequences with certain dependencies. This recurrence helps the model understand how to cut text into statistical chunks that have some predictability. It learns the patterns of these blocks of text and uses this knowledge to propose what might come next.
+
+// More powerful architectures
+
+// While bigger datasets are one catalyst that led to the generative AI boom, a variety of major research advances also led to more complex deep-learning architectures.
+
+// In 2014, a machine-learning architecture known as a generative adversarial network (GAN) was proposed by researchers at the University of Montreal. GANs use two models that work in tandem: One learns to generate a target output (like an image) and the other learns to discriminate true data from the generator’s output. The generator tries to fool the discriminator, and in the process learns to make more realistic outputs. The image generator StyleGAN is based on these types of models.
+
+// Diffusion models were introduced a year later by researchers at Stanford University and the University of California at Berkeley. By iteratively refining their output, these models learn to generate new data samples that resemble samples in a training dataset, and have been used to create realistic-looking images. A diffusion model is at the heart of the text-to-image generation system Stable Diffusion.
+
+// In 2017, researchers at Google introduced the transformer architecture, which has been used to develop large language models, like those that power ChatGPT. In natural language processing, a transformer encodes each word in a corpus of text as a token and then generates an attention map, which captures each token’s relationships with all other tokens. This attention map helps the transformer understand context when it generates new text.
+
+// These are only a few of many approaches that can be used for generative AI.
+
+// A range of applications
+
+// What all of these approaches have in common is that they convert inputs into a set of tokens, which are numerical representations of chunks of data. As long as your data can be converted into this standard, token format, then in theory, you could apply these methods to generate new data that look similar.
+
+// “Your mileage might vary, depending on how noisy your data are and how difficult the signal is to extract, but it is really getting closer to the way a general-purpose CPU can take in any kind of data and start processing it in a unified way,” Isola says.
+
+// This opens up a huge array of applications for generative AI.
+
+// For instance, Isola’s group is using generative AI to create synthetic image data that could be used to train another intelligent system, such as by teaching a computer vision model how to recognize objects.
+
+// Jaakkola’s group is using generative AI to design novel protein structures or valid crystal structures that specify new materials. The same way a generative model learns the dependencies of language, if it’s shown crystal structures instead, it can learn the relationships that make structures stable and realizable, he explains.
+
+// But while generative models can achieve incredible results, they aren’t the best choice for all types of data. For tasks that involve making predictions on structured data, like the tabular data in a spreadsheet, generative AI models tend to be outperformed by traditional machine-learning methods, says Devavrat Shah, the Andrew and Erna Viterbi Professor in Electrical Engineering and Computer Science at MIT and a member of IDSS and of the Laboratory for Information and Decision Systems.
+
+// “The highest value they have, in my mind, is to become this terrific interface to machines that are human friendly. Previously, humans had to talk to machines in the language of machines to make things happen. Now, this interface has figured out how to talk to both humans and machines,” says Shah.
+
+// Raising red flags
+
+// Generative AI chatbots are now being used in call centers to field questions from human customers, but this application underscores one potential red flag of implementing these models — worker displacement.
+
+// In addition, generative AI can inherit and proliferate biases that exist in training data, or amplify hate speech and false statements. The models have the capacity to plagiarize, and can generate content that looks like it was produced by a specific human creator, raising potential copyright issues.
+
+// On the other side, Shah proposes that generative AI could empower artists, who could use generative tools to help them make creative content they might not otherwise have the means to produce.
+
+// In the future, he sees generative AI changing the economics in many disciplines.
+
+// One promising future direction Isola sees for generative AI is its use for fabrication. Instead of having a model make an image of a chair, perhaps it could generate a plan for a chair that could be produced.
+
+// He also sees future uses for generative AI systems in developing more generally intelligent AI agents.
+
+// “There are differences in how these models work and how we think the human brain works, but I think there are also similarities. We have the ability to think and dream in our heads, to come up with interesting ideas or plans, and I think generative AI is one of the tools that will empower agents to do that, as well,” Isola says.
 //   `,
-//   parameters: {
-//     min_length: 150,
-//     max_length: 500,
-//   },
+//   // parameters: {
+//   //   min_length: 150,
+//   //   max_length: 500,
+//   // },
 // }).then((response) => {
 //   console.log(JSON.stringify(response));
 // });
