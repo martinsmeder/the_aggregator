@@ -1,19 +1,26 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const summarize = require("./huggingface");
+const { testDb } = require("./firebase-test-cjs");
+const firestore = require("./database-logic");
 
 const apiUrl = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
 const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
 
 function transform(arr) {
-  return arr.map((item) => ({
-    title: item.title,
-    url: item.link,
-    content: item.content,
-    published: item.published,
-    image: item.media.content.url,
-    summary: null,
-  }));
+  return arr.map((item) => {
+    const date = new Date(item.published);
+    return {
+      title: item.title,
+      url: item.link,
+      content: item.content,
+      rssId: item.title + item.url,
+      published: date.toLocaleString(),
+      timestamp: date.getTime(),
+      image: item.media.content.url,
+      summary: null,
+    };
+  });
 }
 
 function getOneMonthAgo() {
@@ -41,7 +48,7 @@ function summarizeArray(articles) {
     summarize({ inputs: article.content })
       .then((response) => {
         const updatedArticle = article;
-        updatedArticle.summary = response;
+        updatedArticle.summary = response[0].summary_text;
         return updatedArticle;
       })
       .catch((error) => {
@@ -53,37 +60,30 @@ function summarizeArray(articles) {
   return Promise.all(promises);
 }
 
-getSingleFeed(apiUrl + feedUrl)
-  .then((result) => summarizeArray(result))
-  .then((summarized) =>
-    summarized.forEach((item) => console.log(JSON.stringify(item.summary)))
+function getSummarizedFeeds(url) {
+  return getSingleFeed(url)
+    .then((feedData) => summarizeArray(feedData))
+    .catch((error) => console.error(error));
+}
+
+firestore
+  .queryItems(testDb, "summaries", "desc", 100)
+  .then((querySnapshot) => {
+    firestore.setExistingIds(querySnapshot);
+    return getSummarizedFeeds(apiUrl + feedUrl);
+  })
+  .then((feedData) =>
+    firestore.addToFirestore(testDb, "summaries", feedData).then(() => {
+      console.log("Script executed successfully.");
+    })
   )
-  .catch((error) => console.error(error));
+  // eslint-disable-next-line no-return-assign
+  .then(() => (firestore.existingIds.length = 0))
+  .catch((error) => console.error(error))
+  .finally(() => process.exit(0));
 
-// getSingleFeed(apiUrl + feedUrl)
-//   .then((result) => summarize({ inputs: result[5].content }))
-//   .then((summary) => console.log(JSON.stringify(summary)));
-
-// 1. Filter out anything older than 1month
-// 2. Summarize the rest
-
-// getSingleFeed(apiUrl + feedUrl)
-//   .then((result) => summarize({ inputs: result[1].content }))
-//   .then((summary) => console.log(JSON.stringify(summary)));
-
-// getNewsData(apiUrl)
-//   .then((result) =>
-//     Promise.all(
-//       result.map((item) =>
-//         summarize({ inputs: item.content }).then((summary) => ({
-//           content: summary,
-//         }))
-//       )
-//     )
-//   )
-//   .then((summarized) =>
-//     summarized.forEach((summary) =>
-//       console.log(JSON.stringify(summary.content))
-//     )
-//   )
-//   .catch((error) => console.error(error));
+// ---
+// ---
+// 3. Remove old items
+// 4. Everything above when running script
+// 5. Tests
