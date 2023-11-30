@@ -16,8 +16,8 @@ const firestore = (() => {
     querySnapshot.docs.forEach((doc) => existingIds.push(doc.data().rssId));
   }
 
-  function queryItems(database, order, itemLimit) {
-    const collectionRef = collection(database, "all-items");
+  function queryItems(database, collectionName, order, itemLimit) {
+    const collectionRef = collection(database, collectionName);
     const q = query(
       collectionRef,
       orderBy("timestamp", order),
