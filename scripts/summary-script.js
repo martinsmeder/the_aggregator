@@ -3,87 +3,108 @@ const fetch = require("node-fetch");
 const summarize = require("./huggingface");
 const { testDb } = require("./firebase-test-cjs");
 const firestore = require("./database-logic");
+const rssFeeds = require("./rss");
 
-const apiUrl = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
+const summaryScript = (() => {
+  const apiUrl = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
+  const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
 
-function transform(arr) {
-  return arr.map((item) => {
-    const date = new Date(item.published);
-    return {
-      title: item.title,
-      url: item.link,
-      content: item.content,
-      rssId: item.title + item.url,
-      published: date.toLocaleString(),
-      timestamp: date.getTime(),
-      image: item.media.content.url,
-      summary: null,
-    };
-  });
-}
+  function transform(arr) {
+    return arr.map((item) => {
+      const date = new Date(item.published);
+      return {
+        title: item.title,
+        url: item.link,
+        content: item.content,
+        rssId: item.title + item.url,
+        published: date.toLocaleString(),
+        timestamp: date.getTime(),
+        image: item.media.content.url,
+        summary: null,
+      };
+    });
+  }
 
-function getOneMonthAgo() {
-  const today = new Date();
-  const oneMonthAgo = new Date(
-    today.getFullYear(),
-    today.getMonth() - 1,
-    today.getDate()
-  );
-  return oneMonthAgo;
-}
+  function getSingleFeed(url) {
+    return fetch(url)
+      .then((response) => response.json())
+      .then((json) => transform(json.items))
+      .then((transformed) =>
+        transformed.filter(
+          (item) => new Date(item.published) > rssFeeds.getOneMonthAgo()
+        )
+      )
+      .catch((error) => console.error(error));
+  }
 
-function getSingleFeed(url) {
-  return fetch(url)
-    .then((response) => response.json())
-    .then((json) => transform(json.items))
-    .then((transformed) =>
-      transformed.filter((item) => new Date(item.published) > getOneMonthAgo())
-    )
-    .catch((error) => console.error(error));
-}
+  function summarizeArray(articles) {
+    const promises = articles.map((article) =>
+      summarize({ inputs: article.content })
+        .then((response) => {
+          const updatedArticle = article;
+          updatedArticle.summary = response[0].summary_text;
+          return updatedArticle;
+        })
+        .catch((error) => {
+          console.error(`Error summarizing: ${error}`);
+          return article;
+        })
+    );
 
-function summarizeArray(articles) {
-  const promises = articles.map((article) =>
-    summarize({ inputs: article.content })
-      .then((response) => {
-        const updatedArticle = article;
-        updatedArticle.summary = response[0].summary_text;
-        return updatedArticle;
+    return Promise.all(promises);
+  }
+
+  function getSummarizedFeeds(url) {
+    return getSingleFeed(url)
+      .then((feedData) => summarizeArray(feedData))
+      .catch((error) => console.error(error));
+  }
+
+  function queryAndDelete(database) {
+    return firestore
+      .queryItems(database, "summaries", "asc", 500)
+      .then((querySnapshot) => firestore.deleteOlderThanOneMonth(querySnapshot))
+      .then(() => "Old data successfully deleted.")
+      .catch((error) => console.error(`Error: ${error}`));
+  }
+
+  function addRssData(database) {
+    return (
+      firestore
+        .queryItems(database, "summaries", "desc", 500)
+        .then((querySnapshot) => {
+          firestore.setExistingIds(querySnapshot);
+          return getSummarizedFeeds(apiUrl + feedUrl);
+        })
+        .then((processedData) =>
+          firestore.addToFirestore(database, "summaries", processedData)
+        )
+        // eslint-disable-next-line no-return-assign
+        .then(() => (firestore.existingIds.length = 0))
+        .then(() => "New data successfully added.")
+        .catch((error) => console.error(`Error: ${error}`))
+    );
+  }
+
+  function init(database) {
+    queryAndDelete(database)
+      .then((result) => {
+        console.log(result);
+        return addRssData(database);
       })
-      .catch((error) => {
-        console.error(`Error summarizing: ${error}`);
-        return article;
+      .then((result) => {
+        console.log(result);
+        console.log("Script executed successfully.");
       })
-  );
+      .catch((error) => console.error(`Error: ${error}`))
+      .finally(() => process.exit(0)); // Terminate script
+  }
 
-  return Promise.all(promises);
-}
+  return {
+    queryAndDelete,
+    addRssData,
+    init,
+  };
+})();
 
-function getSummarizedFeeds(url) {
-  return getSingleFeed(url)
-    .then((feedData) => summarizeArray(feedData))
-    .catch((error) => console.error(error));
-}
-
-firestore
-  .queryItems(testDb, "summaries", "desc", 100)
-  .then((querySnapshot) => {
-    firestore.setExistingIds(querySnapshot);
-    return getSummarizedFeeds(apiUrl + feedUrl);
-  })
-  .then((feedData) =>
-    firestore.addToFirestore(testDb, "summaries", feedData).then(() => {
-      console.log("Script executed successfully.");
-    })
-  )
-  // eslint-disable-next-line no-return-assign
-  .then(() => (firestore.existingIds.length = 0))
-  .catch((error) => console.error(error))
-  .finally(() => process.exit(0));
-
-// ---
-// ---
-// 3. Remove old items
-// 4. Everything above when running script
-// 5. Tests
+summaryScript.init(testDb);

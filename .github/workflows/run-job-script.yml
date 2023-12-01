@@ -1,13 +1,13 @@
 name: Run Job Script Once A Month
 
-# on:
-#   push:
-#     branches:
-#       - main
-
 on:
-  schedule:
-    - cron: "0 0 1 * *"
+  push:
+    branches:
+      - main
+
+# on:
+#   schedule:
+#     - cron: "0 0 1 * *"
 
 jobs:
   run-script:

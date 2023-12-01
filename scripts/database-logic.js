@@ -27,11 +27,27 @@ const firestore = (() => {
     return getDocs(q);
   }
 
-  function deleteOldData(querySnapshot) {
+  function deleteOlderThanOneYear(querySnapshot) {
     const oneYearAgo = rssFeeds.getOneYearAgo();
 
     const deletionPromises = querySnapshot.docs
       .filter((doc) => doc.data().timestamp < oneYearAgo.getTime())
+      // Iterate over each document in querySnapshot
+      .map((doc) =>
+        // Attempt to delete it, and handle errors
+        deleteDoc(doc.ref).catch((error) =>
+          console.error(`Error deleting ${doc.ref.path}:`, error)
+        )
+      );
+
+    return Promise.all(deletionPromises);
+  }
+
+  function deleteOlderThanOneMonth(querySnapshot) {
+    const oneMonthAgo = rssFeeds.getOneMonthAgo();
+
+    const deletionPromises = querySnapshot.docs
+      .filter((doc) => doc.data().timestamp < oneMonthAgo.getTime())
       // Iterate over each document in querySnapshot
       .map((doc) =>
         // Attempt to delete it, and handle errors
@@ -76,7 +92,8 @@ const firestore = (() => {
     existingIds,
     setExistingIds,
     queryItems,
-    deleteOldData,
+    deleteOlderThanOneYear,
+    deleteOlderThanOneMonth,
     addToFirestore,
     clearFirestore,
   };
