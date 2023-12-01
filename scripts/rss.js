@@ -62,6 +62,16 @@ const rssFeeds = (() => {
     return oneYearAgo;
   }
 
+  function getOneMonthAgo() {
+    const today = new Date();
+    const oneMonthAgo = new Date(
+      today.getFullYear(),
+      today.getMonth() - 1,
+      today.getDate()
+    );
+    return oneMonthAgo;
+  }
+
   function parse(array, category, isReddit) {
     const oneYearAgo = getOneYearAgo();
     const parsedData = array.items
@@ -119,6 +129,7 @@ const rssFeeds = (() => {
     urls,
     getPromises,
     getOneYearAgo,
+    getOneMonthAgo,
     getRssData,
   };
 })();

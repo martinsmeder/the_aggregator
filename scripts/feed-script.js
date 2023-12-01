@@ -5,8 +5,8 @@ const firestore = require("./database-logic");
 const feedScript = (() => {
   function queryAndDelete(database) {
     return firestore
-      .queryItems(database, "all-items", "asc", 1000)
-      .then((querySnapshot) => firestore.deleteOldData(querySnapshot))
+      .queryItems(database, "feeds", "asc", 1000)
+      .then((querySnapshot) => firestore.deleteOlderThanOneYear(querySnapshot))
       .then(() => "Old data successfully deleted.")
       .catch((error) => console.error(`Error: ${error}`));
   }
@@ -14,7 +14,7 @@ const feedScript = (() => {
   function addRssData(database) {
     return (
       firestore
-        .queryItems(database, "all-items", "desc", 4000)
+        .queryItems(database, "feeds", "desc", 4000)
         .then((querySnapshot) => {
           firestore.setExistingIds(querySnapshot);
           return rssFeeds.getRssData(rssFeeds.urls);

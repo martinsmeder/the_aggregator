@@ -84,11 +84,11 @@ const jobScript = (() => {
   };
 
   // Fetches data for all keywords and adds it to the Firestore database
-  function init() {
+  function init(database) {
     fetchAllData(keywordsList)
       .then((data) =>
         // Add fetched data to the Firestore database
-        firestore.addToFirestore(db, "jobs", data).then(() => {
+        firestore.addToFirestore(database, "jobs", data).then(() => {
           console.log("Script executed successfully."); // Log success message
         })
       )
@@ -103,6 +103,6 @@ const jobScript = (() => {
   };
 })();
 
-jobScript.init();
+jobScript.init(db);
 
 module.exports = jobScript;

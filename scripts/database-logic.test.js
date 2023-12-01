@@ -4,7 +4,7 @@
 
 // // HOW TO TEST:
 // // * Make sure database is empty before running tests
-// // * Comment out { db } import (top of script.js), as well as init call (bottom of script.js)
+// // * Comment out { db } import (top of feed-script.js), as well as init call (bottom of script.js)
 // // * Uncomment and run one test at a time
 // // * If a test fails, the information will be shown as a console.error, even though the test
 // //   "passed"
@@ -16,18 +16,18 @@
 //     const initialData = [
 //       {
 //         rssId: "1",
-//         timestamp: new Date("2023-08-31T00:00:00Z").getTime(),
+//         timestamp: new Date("2024-01-01T00:00:00Z").getTime(),
 //       },
 //     ];
 
 //     const dataToAdd = [
 //       {
 //         rssId: "1",
-//         timestamp: new Date("2023-08-31T00:00:00Z").getTime(),
+//         timestamp: new Date("2024-01-01T00:00:00Z").getTime(),
 //       },
 //       {
 //         rssId: "2",
-//         timestamp: new Date("2023-09-01T00:00:00Z").getTime(),
+//         timestamp: new Date("2024-01-15T00:00:00Z").getTime(),
 //       },
 //     ];
 
