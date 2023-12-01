@@ -1,8 +1,8 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const firestore = require("./database-logic");
-const { testDb } = require("./firebase-test-cjs");
-// const { db } = require("./firebase-cjs");
+// const { testDb } = require("./firebase-test-cjs");
+const { db } = require("./firebase-cjs");
 
 const jobScript = (() => {
   const url = "https://jooble.org/api/";
@@ -103,6 +103,6 @@ const jobScript = (() => {
   };
 })();
 
-jobScript.init(testDb);
+jobScript.init(db);
 
 module.exports = jobScript;
