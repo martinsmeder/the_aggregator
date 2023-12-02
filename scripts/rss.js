@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+const miscHelpers = require("./utils");
 
 const rssFeeds = (() => {
   const urls = [
@@ -52,53 +53,6 @@ const rssFeeds = (() => {
     return promises;
   }
 
-  function getOneYearAgo() {
-    const today = new Date();
-    const oneYearAgo = new Date(
-      today.getFullYear() - 1,
-      today.getMonth(),
-      today.getDate()
-    );
-    return oneYearAgo;
-  }
-
-  function getOneMonthAgo() {
-    const today = new Date();
-    const oneMonthAgo = new Date(
-      today.getFullYear(),
-      today.getMonth() - 1,
-      today.getDate()
-    );
-    return oneMonthAgo;
-  }
-
-  function parse(array, category, isReddit) {
-    const oneYearAgo = getOneYearAgo();
-    const parsedData = array.items
-      .filter((item) => new Date(item.published) > oneYearAgo)
-      .map((item) => {
-        const date = new Date(item.published);
-        return {
-          magazineView: true,
-          isReddit,
-          rssId: isReddit
-            ? `${item.category.label}: ${item.url} `
-            : `${array.title}: ${item.url}`,
-          date: date.toLocaleString(),
-          title: item.title,
-          url: item.url,
-          description: isReddit
-            ? item.content || "No description available"
-            : item.description || "No description available",
-          source: isReddit ? item.category.label : array.title,
-          category,
-          timestamp: date.getTime(),
-        };
-      });
-
-    return parsedData;
-  }
-
   // eslint-disable-next-line no-shadow
   function getRssData(urls) {
     return new Promise((resolve, reject) => {
@@ -115,7 +69,11 @@ const rssFeeds = (() => {
           dataArray
             // Map each parsed data array with category and isReddit values
             .map((data, index) =>
-              parse(data, urls[index].category, urls[index].isReddit)
+              miscHelpers.parseFeedData(
+                data,
+                urls[index].category,
+                urls[index].isReddit
+              )
             )
             // Flatten into an array of items only, instead of an array with arrays of items
             .flat()
@@ -128,8 +86,6 @@ const rssFeeds = (() => {
   return {
     urls,
     getPromises,
-    getOneYearAgo,
-    getOneMonthAgo,
     getRssData,
   };
 })();
