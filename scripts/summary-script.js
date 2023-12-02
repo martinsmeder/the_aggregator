@@ -3,37 +3,16 @@ const fetch = require("node-fetch");
 const summarize = require("./huggingface");
 const { testDb } = require("./firebase-test-cjs");
 const firestore = require("./database-logic");
-const rssFeeds = require("./rss");
+const miscHelpers = require("./utils");
 
 const summaryScript = (() => {
   const apiUrl = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
   const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
 
-  function transform(arr) {
-    return arr.map((item) => {
-      const date = new Date(item.published);
-      return {
-        title: item.title,
-        url: item.link,
-        content: item.content,
-        rssId: item.title + item.url,
-        published: date.toLocaleString(),
-        timestamp: date.getTime(),
-        image: item.media.content.url,
-        summary: null,
-      };
-    });
-  }
-
   function getSingleFeed(url) {
     return fetch(url)
       .then((response) => response.json())
-      .then((json) => transform(json.items))
-      .then((transformed) =>
-        transformed.filter(
-          (item) => new Date(item.published) > rssFeeds.getOneMonthAgo()
-        )
-      )
+      .then((json) => miscHelpers.parseSummaryData(json.items))
       .catch((error) => console.error(error));
   }
 
@@ -108,3 +87,5 @@ const summaryScript = (() => {
 })();
 
 summaryScript.init(testDb);
+
+module.exports = summaryScript;
