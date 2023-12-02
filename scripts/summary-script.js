@@ -1,7 +1,8 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const summarize = require("./huggingface");
-const { testDb } = require("./firebase-test-cjs");
+const { db } = require("./firebase-cjs");
+// const { testDb } = require("./firebase-test-cjs");
 const firestore = require("./database-logic");
 const miscHelpers = require("./utils");
 
@@ -17,22 +18,31 @@ const summaryScript = (() => {
   }
 
   function summarizeArray(articles) {
+    // Create an array of promises for each article
     const promises = articles.map((article) =>
+      // Call the summarize function to generate a summary for the article's content
       summarize({ inputs: article.content })
+        // If the summarize function resolves successfully
         .then((response) => {
-          const updatedArticle = article;
+          // Create a copy of the article object to prevent mutation
+          const updatedArticle = { ...article };
+          // Assign the summary to the copied article object
           updatedArticle.summary = response[0].summary_text;
+          // Return the updated article with the added summary
           return updatedArticle;
         })
+        // If an error occurs during the summarization process
         .catch((error) => {
+          // Log the error message for the failed summary
           console.error(`Error summarizing: ${error}`);
+          // Return the original article to keep it unchanged
           return article;
         })
     );
 
+    // Return a promise that resolves when all individual promises (summarizations) are settled
     return Promise.all(promises);
   }
-
   function getSummarizedFeeds(url) {
     return getSingleFeed(url)
       .then((feedData) => summarizeArray(feedData))
@@ -86,6 +96,6 @@ const summaryScript = (() => {
   };
 })();
 
-summaryScript.init(testDb);
+summaryScript.init(db);
 
 module.exports = summaryScript;
