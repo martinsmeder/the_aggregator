@@ -86,7 +86,7 @@ const rssFeeds = (() => {
   function checkFeeds(urls) {
     const promises = getPromises(urls);
 
-    Promise.all(promises)
+    return Promise.all(promises)
       .then((responses) => {
         const deadUrls = [];
 
@@ -97,13 +97,9 @@ const rssFeeds = (() => {
         });
 
         if (deadUrls.length === 0) {
-          console.log("All feeds valid");
-        } else {
-          console.log("Dead URLs:");
-          deadUrls.forEach((url) => {
-            console.log(url);
-          });
+          return "All feeds valid";
         }
+        return deadUrls;
       })
       .catch((error) => console.error(error));
   }
@@ -116,6 +112,6 @@ const rssFeeds = (() => {
   };
 })();
 
-rssFeeds.checkFeeds(rssFeeds.urls);
+// rssFeeds.checkFeeds(rssFeeds.urls).then((result) => console.log(result));
 
 module.exports = rssFeeds;
