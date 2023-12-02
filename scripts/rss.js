@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 const fetch = require("node-fetch");
 const miscHelpers = require("./utils");
 
@@ -40,7 +41,6 @@ const rssFeeds = (() => {
     },
   ];
 
-  // eslint-disable-next-line no-shadow
   function getPromises(urls) {
     const api = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
     const promises = urls.map((source) =>
@@ -83,11 +83,39 @@ const rssFeeds = (() => {
     });
   }
 
+  function checkFeeds(urls) {
+    const promises = getPromises(urls);
+
+    Promise.all(promises)
+      .then((responses) => {
+        const deadUrls = [];
+
+        responses.forEach((response, index) => {
+          if (!response) {
+            deadUrls.push(urls[index].url);
+          }
+        });
+
+        if (deadUrls.length === 0) {
+          console.log("All feeds valid");
+        } else {
+          console.log("Dead URLs:");
+          deadUrls.forEach((url) => {
+            console.log(url);
+          });
+        }
+      })
+      .catch((error) => console.error(error));
+  }
+
   return {
     urls,
     getPromises,
     getRssData,
+    checkFeeds,
   };
 })();
+
+rssFeeds.checkFeeds(rssFeeds.urls);
 
 module.exports = rssFeeds;

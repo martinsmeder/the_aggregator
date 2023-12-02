@@ -7,7 +7,7 @@ const {
   orderBy,
   query,
 } = require("firebase/firestore");
-const rssFeeds = require("./rss");
+const miscHelpers = require("./utils");
 
 const firestore = (() => {
   const existingIds = [];
@@ -28,7 +28,7 @@ const firestore = (() => {
   }
 
   function deleteOlderThanOneYear(querySnapshot) {
-    const oneYearAgo = rssFeeds.getOneYearAgo();
+    const oneYearAgo = miscHelpers.getOneYearAgo();
 
     const deletionPromises = querySnapshot.docs
       .filter((doc) => doc.data().timestamp < oneYearAgo.getTime())
@@ -44,7 +44,7 @@ const firestore = (() => {
   }
 
   function deleteOlderThanOneMonth(querySnapshot) {
-    const oneMonthAgo = rssFeeds.getOneMonthAgo();
+    const oneMonthAgo = miscHelpers.getOneMonthAgo();
 
     const deletionPromises = querySnapshot.docs
       .filter((doc) => doc.data().timestamp < oneMonthAgo.getTime())
@@ -88,78 +88,6 @@ const firestore = (() => {
     return Promise.all(deletionPromises);
   }
 
-  function queryAndDelete(
-    database,
-    collectionName,
-    deleteOrder,
-    orderLimit,
-    callback
-  ) {
-    return firestore
-      .queryItems(database, collectionName, deleteOrder, orderLimit)
-      .then((querySnapshot) => callback(querySnapshot))
-      .then(() => "Old data successfully deleted.")
-      .catch((error) => console.error(`Error: ${error}`));
-  }
-
-  function addRssData(
-    database,
-    collectionName,
-    addOrder,
-    orderLimit,
-    callback
-  ) {
-    return (
-      firestore
-        .queryItems(database, collectionName, addOrder, orderLimit)
-        .then((querySnapshot) => {
-          firestore.setExistingIds(querySnapshot);
-          return callback;
-        })
-        .then((processedData) =>
-          firestore.addToFirestore(database, collectionName, processedData)
-        )
-        // eslint-disable-next-line no-return-assign
-        .then(() => (firestore.existingIds.length = 0))
-        .then(() => "New data successfully added.")
-        .catch((error) => console.error(`Error: ${error}`))
-    );
-  }
-
-  function init(
-    database,
-    collectionName,
-    deleteOrder,
-    addOrder,
-    orderLimit,
-    deleteCallback,
-    addCallback
-  ) {
-    queryAndDelete(
-      database,
-      collectionName,
-      deleteOrder,
-      orderLimit,
-      deleteCallback
-    )
-      .then((result) => {
-        console.log(result);
-        return addRssData(
-          database,
-          collectionName,
-          addOrder,
-          orderLimit,
-          addCallback
-        );
-      })
-      .then((result) => {
-        console.log(result);
-        console.log("Script executed successfully.");
-      })
-      .catch((error) => console.error(`Error: ${error}`))
-      .finally(() => process.exit(0)); // Terminate script
-  }
-
   return {
     existingIds,
     setExistingIds,
@@ -168,7 +96,6 @@ const firestore = (() => {
     deleteOlderThanOneMonth,
     addToFirestore,
     clearFirestore,
-    init,
   };
 })();
 
