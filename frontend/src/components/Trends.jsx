@@ -8,10 +8,11 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { getSingleQuery } from "./database-logic";
-import { testDb } from "./firebase-test";
+import { getSingleQuery } from "../javascript/database-logic";
+import { testDb } from "../javascript/firebase-test";
+import Header from "./Header";
 
-function MyChart() {
+export default function Trends() {
   const [data, setData] = useState([]);
   const [months, setMonths] = useState([]);
 
@@ -41,28 +42,32 @@ function MyChart() {
   }, []);
 
   return (
-    <LineChart width={700} height={400} data={data}>
-      <XAxis dataKey="name" tickCount={months.length} />
-      <YAxis />
-      <CartesianGrid stroke="#eee" />
-      <Tooltip />
-      <Legend />
+    <>
+      <Header />
 
-      {Object.keys(data[0] || {})
-        // Filter out keys that are not needed for rendering lines in the chart
-        .filter((key) => !["name", "month", "year"].includes(key))
-        // Map each relevant key to a Line component for rendering in the chart
-        .map((key) => (
-          <Line
-            key={key}
-            type="monotone"
-            dataKey={key}
-            name={key}
-            stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
-          />
-        ))}
-    </LineChart>
+      <main>
+        <LineChart width={700} height={400} data={data}>
+          <XAxis dataKey="name" tickCount={months.length} />
+          <YAxis />
+          <CartesianGrid stroke="#eee" />
+          <Tooltip />
+          <Legend />
+
+          {Object.keys(data[0] || {})
+            // Filter out keys that are not needed for rendering lines in the chart
+            .filter((key) => !["name", "month", "year"].includes(key))
+            // Map each relevant key to a Line component for rendering in the chart
+            .map((key) => (
+              <Line
+                key={key}
+                type="monotone"
+                dataKey={key}
+                name={key}
+                stroke={`#${Math.floor(Math.random() * 16777215).toString(16)}`}
+              />
+            ))}
+        </LineChart>
+      </main>
+    </>
   );
 }
-
-export default MyChart;
