@@ -1,6 +1,7 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const firestore = require("./database-logic");
+const miscHelpers = require("./utils");
 // const { testDb } = require("./firebase-test-cjs");
 const { db } = require("./firebase-cjs");
 
@@ -20,8 +21,8 @@ const jobScript = (() => {
   // Fetch data for a specific keyword
   const fetchData = (keywords) => {
     const params = {
-      keywords, // The keyword to search for
-      location, // The location for the job search
+      keywords,
+      location,
     };
 
     // Fetches data from the specified URL using the provided API key and parameters
@@ -30,57 +31,41 @@ const jobScript = (() => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(params), // Converts the parameters to JSON format
+      body: JSON.stringify(params),
     })
       .then((response) => {
         if (response.ok) {
-          return response.json(); // Parses the response JSON
+          return response.json();
         }
-        throw new Error("Error:", response.statusText); // Throws an error for non-OK responses
+        throw new Error("Error:", response.statusText);
       })
-      .then((data) => data); // Returns the fetched data
+      .catch((error) => console.error(error));
   };
 
   // Fetch data for all keywords in the 'keywordsList'
   const fetchAllData = (arr) => {
     // Create an array of promises for fetching data for each keyword
     const promises = arr.map((keyword) => fetchData(keyword));
-
     // Executes all promises in parallel and waits for all of them to settle
     return Promise.allSettled(promises)
       .then((results) => {
-        // Get the current month and year
-        const today = new Date();
-        const month = today.toLocaleString("default", {
-          month: "long",
-        });
-        const year = today.getFullYear();
-
         // Maps the settled promises (results) to an array of objects containing keyword data
         const keywordData = results.map((result, index) => {
           if (result.status === "fulfilled") {
             return {
               name: arr[index],
-              count: result.value.totalCount || 0,
-              month,
-              year,
-            };
-            // eslint-disable-next-line no-else-return
-          } else {
-            return {
-              name: arr[index],
-              count: 0,
-              month,
-              year,
+              count: result.value.totalCount,
+              month: miscHelpers.getCurrentMonth(),
+              year: miscHelpers.getCurrentYear(),
             };
           }
+
+          throw new Error(`Fetch error: ${result.reason}`);
         });
 
-        return keywordData; // Returns the array of keyword data
+        return keywordData;
       })
-      .catch(
-        (error) => console.error("Error:", error) // Handles any errors occurred during the process
-      );
+      .catch((error) => console.error("Error:", error));
   };
 
   // Fetches data for all keywords and adds it to the Firestore database
@@ -89,7 +74,7 @@ const jobScript = (() => {
       .then((data) =>
         // Add fetched data to the Firestore database
         firestore.addToFirestore(database, "jobs", data).then(() => {
-          console.log("Script executed successfully."); // Log success message
+          console.log("Script executed successfully.");
         })
       )
       .catch((error) => console.error("Error:", error))
