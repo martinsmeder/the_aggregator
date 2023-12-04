@@ -1,10 +1,11 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
-import { getSingleQuery } from "./database-logic";
-import { testDb } from "./firebase-test";
+import { getSingleQuery } from "../javascript/database-logic";
+import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
+import Header from "./Header";
 
-function App() {
+export default function Summaries() {
   // const [snapshot, setSnapshot] = useState([]);
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
@@ -37,15 +38,15 @@ function App() {
 
   return (
     <>
-      <h1>Things</h1>
-      {items.length > 0 ? (
-        items.map((item) => <p key={item}>{item}</p>)
-      ) : (
-        <p>No items available</p>
-      )}
-      {/* <button onClick={() => handleLoadClick(snapshot)}>Load more</button> */}
+      <Header />
+      <main>
+        <h1>Things</h1>
+        {items.length > 0 ? (
+          items.map((item) => <p key={item}>{item}</p>)
+        ) : (
+          <p>No items available</p>
+        )}
+      </main>
     </>
   );
 }
-
-export default App;
