@@ -1,11 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Audiowide&family=Cinzel&family=Orbitron:wght@700&display=swap');
-
 header {
     width: 95%;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
+    gap: 20px;
     background: linear-gradient(to top, #1e1e1e, #585657);
     border-bottom-left-radius: 20px; 
     border-bottom-right-radius: 20px;
@@ -17,14 +15,20 @@ header {
 }
 
 header h1 {
-    /* font-family: 'Cinzel', serif;
-    font-family: 'Orbitron', sans-serif; */
     font-family: 'Audiowide', sans-serif;
     text-decoration: underline;
 }
 
 header a {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     color: #FFF;
+    text-decoration: none;
+}
+
+header img {
+    width: 20px;
 }
 
 nav {
@@ -32,3 +36,4 @@ nav {
     display: flex;
     justify-content: space-around;
 }
+
