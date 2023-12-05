@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 export default function Header() {
   return (
     <header>
+      <h1>THE AGGREGATOR</h1>
+
       <nav>
         <Link to="/">Summaries</Link>
 
