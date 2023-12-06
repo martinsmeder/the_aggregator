@@ -34,7 +34,7 @@ export default function Summaries() {
   // }
 
   if (error) return <p>Error: {error}</p>;
-  if (loading) return <p>Loading...</p>;
+  // if (loading) return <p>Loading...</p>;
 
   return (
     <>
