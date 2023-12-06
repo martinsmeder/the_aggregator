@@ -11,6 +11,7 @@ import {
 import { getSingleQuery } from "../javascript/database-logic";
 import { testDb } from "../javascript/firebase-test";
 import Header from "./Header";
+import Footer from "./Footer";
 
 export default function Trends() {
   const [data, setData] = useState([]);
@@ -68,6 +69,7 @@ export default function Trends() {
             ))}
         </LineChart>
       </main>
+      <Footer />
     </>
   );
 }
