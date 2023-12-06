@@ -21,6 +21,7 @@ header h1 {
 }
 
 header a {
+    width: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -35,8 +36,6 @@ header a {
     border-top: 2px solid transparent;
     border-left: 2px solid transparent;
     border-right: 2px solid transparent;
-    width: 130px;
-    text-align: center;
 }
 
 header a.active {
@@ -53,6 +52,59 @@ header img {
 nav {
     width: 100%;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
 }
 
+@media (max-width: 550px) {
+    header {
+        border-bottom-left-radius: 10px; 
+        border-bottom-right-radius:10px;
+    }
+
+    header h1 {
+        font-size: 2rem;
+    }
+
+    header a {
+        font-size: .8rem;
+        width: 90px;
+    }
+
+    header img {
+        width: 14px;
+    }
+}
+
+@media (max-width: 400px) {
+    header {
+        width: 100%;
+        border-bottom-left-radius: 0px; 
+        border-bottom-right-radius: 0px;
+        border-right: none;
+        border-left: none;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 300px) {
+    header {
+        gap: 10px;
+    }
+
+    header a {
+        width: 60px;
+        padding: 5px;
+    }
+
+    header a p {
+        display: none;
+    }
+
+    header h1 {
+        font-size: 1.2rem;
+        text-align: center;
+    }
+}

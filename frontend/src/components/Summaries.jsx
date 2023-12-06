@@ -4,6 +4,7 @@ import { getSingleQuery } from "../javascript/database-logic";
 import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
 import Header from "./Header";
+import Footer from "./Footer";
 
 export default function Summaries() {
   // const [snapshot, setSnapshot] = useState([]);
@@ -47,6 +48,7 @@ export default function Summaries() {
           <p>No items available</p>
         )}
       </main>
+      <Footer />
     </>
   );
 }
