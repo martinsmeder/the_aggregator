@@ -11,20 +11,39 @@ header {
     border-right: 1px solid #fff;
     border-left: 1px solid #fff;
     box-shadow: 0 0 1rem #ffffff;
-    padding: 10px;
+    padding-top: 10px;
 }
 
 header h1 {
     font-family: 'Audiowide', sans-serif;
     text-decoration: underline;
+    font-size: 2.5rem;
 }
 
 header a {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 5px;
     color: #FFF;
+    background: #585657;
     text-decoration: none;
+    transition: .1s ease-in;
+    padding: 10px;
+    border-top-left-radius: 10px; 
+    border-top-right-radius: 10px;
+    border-top: 2px solid transparent;
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    width: 130px;
+    text-align: center;
+}
+
+header a.active {
+   box-shadow: 0 0 .7rem #FFF;
+   border-top: 2px solid #fff;
+   border-left: 2px solid #fff;
+   border-right: 2px solid #fff;
 }
 
 header img {
