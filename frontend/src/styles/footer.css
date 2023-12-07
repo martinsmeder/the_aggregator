@@ -19,23 +19,24 @@ footer a {
     gap: 5px;
     text-decoration: none;
     color: #FFF;
-    border-left: 2px solid transparent;
-    border-right: 2px solid transparent;
+    border-left: 2px solid #FFF;
+    border-right: 2px solid #FFF;
     gap: 3px;
     background: #585657;
-    border-color: #FFF;
+
 }
 
 footer .github {
     font-size: 1.2rem;
     font-weight: bold;
     box-shadow: 0 0 .5rem #ffffff;
+    border-bottom: 2px solid #FFF;
 }
 
 footer .apis {
     width: 90%;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
 }
 
 footer .apis a {
@@ -51,6 +52,60 @@ footer a.github {
 }
 
 footer img {
-    width: 30px;
+    width: 24px;
 }
- 
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+  
+
+footer a:hover img {
+    animation: spin .5s linear; 
+}
+
+@media (max-width: 550px) {
+    footer {
+        border-top-left-radius: 10px; 
+        border-top-right-radius:10px;
+    }
+
+    footer .extraText {
+        display: none;
+    }
+}
+
+@media (max-width: 475px) {
+    footer .github {
+        font-size: 1rem;
+    }
+
+}
+
+@media (max-width: 400px) {
+    footer {
+        width: 100%;
+        border-top-left-radius: 0px; 
+        border-top-right-radius: 0px;
+        border-right: none;
+        border-left: none;
+    }
+}
+
+@media (max-width: 300px) {
+    footer .apis a {
+
+        padding: 2px;
+    }
+    
+    footer a.github {
+        padding: 5px;    
+    }
+
+    footer img {
+        width: 20px;
+    }
+}
