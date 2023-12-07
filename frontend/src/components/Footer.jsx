@@ -17,12 +17,16 @@ export default function Footer() {
           href="https://huggingface.co/facebook/bart-large-cnn"
           rel="noreferrer"
         >
-          <p>AI model hosted by HF</p>
+          <p>
+            AI model <span className="extraText">hosted by HF</span>
+          </p>
           <img src="hf.png" alt="Huggingface" />
         </a>
 
         <a target="_blank" href="https://jooble.org/api/about" rel="noreferrer">
-          <p>Job data aggregated by</p>
+          <p>
+            Job data <span className="extraText">aggregated by</span>
+          </p>
           <img src="jooble.png" alt="Jooble" />
         </a>
       </div>
