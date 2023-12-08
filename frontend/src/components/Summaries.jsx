@@ -7,32 +7,19 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 export default function Summaries() {
-  // const [snapshot, setSnapshot] = useState([]);
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSingleQuery(testDb, "summaries")
       .then((querySnapshot) => {
-        // setSnapshot(querySnapshot);
-        return querySnapshot.docs.map((doc) => doc.data().summary);
+        return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => setItems(mapped))
-      .catch((error) => setError(error))
-      .finally(() => setLoading(false));
+      .catch((error) => setError(error));
+    // .finally(() => setLoading(false));
   }, []);
-
-  // function handleLoadClick(snapshot) {
-  //   getCategoryQuery(testDb, "ai", snapshot)
-  //     .then((querySnapshot) => {
-  //       setSnapshot(querySnapshot);
-  //       return querySnapshot.docs.map((doc) => doc.data().title);
-  //     })
-  //     .then((mapped) => {
-  //       setItems((itemsCopy) => [...itemsCopy, ...mapped]);
-  //     });
-  // }
 
   if (error) return <p>Error: {error}</p>;
   // if (loading) return <p>Loading...</p>;
@@ -40,13 +27,22 @@ export default function Summaries() {
   return (
     <>
       <Header />
-      <main>
-        <h1>Things</h1>
-        {items.length > 0 ? (
-          items.map((item) => <p key={item}>{item}</p>)
-        ) : (
-          <p>No items available</p>
-        )}
+      <main id="summaries">
+        {items.map((item) => (
+          <div key={item.rssId} className="card">
+            <img src={item.image} alt={item.title} />
+            <div className="wrapper">
+              <div className="top">
+                <h3>{item.title}</h3>
+                <p className="summaryText">{item.summary}</p>
+              </div>
+              <div className="bottom">
+                <p>{item.published}</p>
+                <button>Full article</button>
+              </div>
+            </div>
+          </div>
+        ))}
       </main>
       <Footer />
     </>
