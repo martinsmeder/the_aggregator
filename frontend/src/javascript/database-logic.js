@@ -20,11 +20,7 @@ export function getSingleQuery(database, collectionName) {
   return getDocs(q);
 }
 
-export function getFeedQueries(
-  database,
-  category = null,
-  querySnapshot = null
-) {
+export function getCategoryQueries(database, category, querySnapshot = null) {
   const collectionRef = collection(database, "feeds");
   const lastVisible = getLastVisible(querySnapshot);
 
@@ -41,6 +37,24 @@ export function getFeedQueries(
       orderBy("timestamp", "desc"),
       limit(10),
       where("category", "==", category),
+      startAfter(lastVisible)
+    );
+  }
+
+  return getDocs(q);
+}
+
+export function getAllQueries(database, querySnapshot = null) {
+  const collectionRef = collection(database, "feeds");
+  const lastVisible = getLastVisible(querySnapshot);
+
+  let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
+
+  if (lastVisible) {
+    q = query(
+      collectionRef,
+      orderBy("timestamp", "desc"),
+      limit(10),
       startAfter(lastVisible)
     );
   }
