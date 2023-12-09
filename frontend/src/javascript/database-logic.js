@@ -20,7 +20,11 @@ export function getSingleQuery(database, collectionName) {
   return getDocs(q);
 }
 
-export function getFeedQueries(database, category, querySnapshot = null) {
+export function getFeedQueries(
+  database,
+  category = null,
+  querySnapshot = null
+) {
   const collectionRef = collection(database, "feeds");
   const lastVisible = getLastVisible(querySnapshot);
 
