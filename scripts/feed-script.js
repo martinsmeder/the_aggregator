@@ -1,4 +1,5 @@
 const { db } = require("./firebase-cjs");
+// const { testDb } = require("./firebase-test-cjs");
 const rssFeeds = require("./rss");
 const firestore = require("./database-logic");
 
@@ -6,7 +7,7 @@ const feedScript = (() => {
   function queryAndDelete(database) {
     return firestore
       .queryItems(database, "feeds", "asc", 1000)
-      .then((querySnapshot) => firestore.deleteOlderThanOneYear(querySnapshot))
+      .then((querySnapshot) => firestore.deleteOlderThanOneMonth(querySnapshot))
       .then(() => "Old data successfully deleted.")
       .catch((error) => console.error(`Error: ${error}`));
   }

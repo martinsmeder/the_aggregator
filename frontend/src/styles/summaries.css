@@ -40,9 +40,50 @@
     justify-content: space-between;
 }
 
+#summaries .card .wrapper .bottom a {
+   text-decoration: none;
+   text-align: center;
+   color: #000;
+   background: #FFF;
+   border-radius: 7px;
+   padding: 3px;
+}
+
 #summaries .summaryText {
     font-size: .9rem;
 }
+
+@media (max-width: 750px ) {
+   #summaries .card {
+        flex-direction: column;
+   } 
+
+   #summaries .card img{
+        width: 100%;
+   } 
+}
+
+@media (max-width: 400px ) {
+    #summaries .card {
+        padding: 0px;
+        gap: 0px;
+    } 
+
+    #summaries .card img {
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+    } 
+
+    #summaries .card .wrapper {
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+    } 
+ 
+    #summaries .card .wrapper .bottom {
+        flex-direction: column;
+        gap: 5px;
+    }
+ }
 
 
 

@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 import { getSingleQuery } from "../javascript/database-logic";
+import sortItems from "../javascript/utils";
 import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
 import Header from "./Header";
@@ -16,7 +17,10 @@ export default function Summaries() {
       .then((querySnapshot) => {
         return querySnapshot.docs.map((doc) => doc.data());
       })
-      .then((mapped) => setItems(mapped))
+      .then((mapped) => {
+        const sortedItems = sortItems(mapped);
+        setItems(sortedItems);
+      })
       .catch((error) => setError(error));
     // .finally(() => setLoading(false));
   }, []);
@@ -38,7 +42,9 @@ export default function Summaries() {
               </div>
               <div className="bottom">
                 <p>{item.published}</p>
-                <button>Full article</button>
+                <a target="_blank" href={item.url}>
+                  Full article
+                </a>
               </div>
             </div>
           </div>

@@ -11,7 +11,7 @@ const rssFeeds = (() => {
     },
     {
       category: "ai",
-      url: "https://www.deepmind.com/blog/rss.xml",
+      url: "https://deepmind.com/blog/feed/basic/",
       isReddit: false,
     },
     {
@@ -25,18 +25,23 @@ const rssFeeds = (() => {
       isReddit: true,
     },
     {
-      category: "programming",
-      url: "https://www.reddit.com/r/programming/top/.rss?limit=500",
-      isReddit: true,
-    },
-    {
-      category: "programming",
-      url: "http://blog.stackoverflow.com/feed/",
+      category: "science",
+      url: "http://www.sciencedaily.com/rss/mind_brain.xml",
       isReddit: false,
     },
     {
-      category: "programming",
-      url: "http://githubengineering.com/atom.xml",
+      category: "science",
+      url: "http://feeds.arstechnica.com/arstechnica/science",
+      isReddit: false,
+    },
+    {
+      category: "gaming",
+      url: "http://feeds.arstechnica.com/arstechnica/gaming/",
+      isReddit: false,
+    },
+    {
+      category: "gaming",
+      url: "https://www.ign.com/rss/articles/feed?tags=games",
       isReddit: false,
     },
   ];
@@ -112,6 +117,6 @@ const rssFeeds = (() => {
   };
 })();
 
-// rssFeeds.checkFeeds(rssFeeds.urls).then((result) => console.log(result));
+rssFeeds.checkFeeds(rssFeeds.urls).then((result) => console.log(result));
 
 module.exports = rssFeeds;

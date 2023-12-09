@@ -33,7 +33,7 @@ const miscHelpers = (() => {
 
   function parseFeedData(array, category, isReddit) {
     return array.items
-      .filter((item) => new Date(item.published) > getOneYearAgo())
+      .filter((item) => new Date(item.published) > getOneMonthAgo())
       .map((item) => {
         const date = new Date(item.published);
         return {
@@ -42,7 +42,7 @@ const miscHelpers = (() => {
           rssId: isReddit
             ? `${item.category.label}: ${item.url} `
             : `${array.title}: ${item.url}`,
-          date: date.toLocaleString(),
+          published: date.toLocaleString(),
           title: item.title,
           url: item.url,
           description: isReddit
