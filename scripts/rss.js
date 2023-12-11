@@ -20,11 +20,6 @@ const rssFeeds = (() => {
       isReddit: false,
     },
     {
-      category: "ai",
-      url: "https://www.reddit.com/r/artificial/top/.rss?limit=500",
-      isReddit: true,
-    },
-    {
       category: "science",
       url: "http://www.sciencedaily.com/rss/mind_brain.xml",
       isReddit: false,
@@ -41,7 +36,7 @@ const rssFeeds = (() => {
     },
     {
       category: "gaming",
-      url: "https://www.polygon.com/rss/index.xml",
+      url: "https://www.ign.com/rss/articles/feed?tags=games",
       isReddit: false,
     },
   ];
@@ -74,11 +69,7 @@ const rssFeeds = (() => {
           dataArray
             // Map each parsed data array with category and isReddit values
             .map((data, index) =>
-              miscHelpers.parseFeedData(
-                data,
-                urls[index].category,
-                urls[index].isReddit
-              )
+              miscHelpers.parseFeedData(data, urls[index].category)
             )
             // Flatten into an array of items only, instead of an array with arrays of items
             .flat()
