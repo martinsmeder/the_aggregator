@@ -41,7 +41,7 @@ const rssFeeds = (() => {
     },
     {
       category: "gaming",
-      url: "https://www.ign.com/rss/articles/feed?tags=games",
+      url: "https://www.polygon.com/rss/index.xml",
       isReddit: false,
     },
   ];
