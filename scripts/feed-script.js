@@ -1,5 +1,5 @@
-const { db } = require("./firebase-cjs");
-// const { testDb } = require("./firebase-test-cjs");
+// const { db } = require("./firebase-cjs");
+const { testDb } = require("./firebase-test-cjs");
 const rssFeeds = require("./rss");
 const firestore = require("./database-logic");
 
@@ -51,6 +51,6 @@ const feedScript = (() => {
   };
 })();
 
-feedScript.init(db);
+feedScript.init(testDb);
 
 module.exports = firestore;

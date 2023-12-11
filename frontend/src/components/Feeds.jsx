@@ -3,7 +3,7 @@ import {
   getAllQueries,
   getCategoryQueries,
 } from "../javascript/database-logic";
-import sortItems from "../javascript/utils";
+import { sortItems, stripHtmlTags } from "../javascript/utils";
 import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
 import Header from "./Header";
@@ -96,13 +96,13 @@ export default function Feeds() {
             <p>
               {item.source} - {item.published}
             </p>
-            {/* {item.isReddit ? (
-              <p>No description available</p>
+            {item.isReddit ? (
+              <p>{stripHtmlTags(item.description)}</p>
             ) : (
-              <p> {item.description} </p>
-            )} */}
+              <p>{item.description}</p>
+            )}
             <a target="_blank" href={item.url} rel="noreferrer">
-              Full article
+              {item.isReddit ? "View discussion" : "Full article"}
             </a>
           </div>
         ))}
