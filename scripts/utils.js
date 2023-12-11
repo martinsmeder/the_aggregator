@@ -31,24 +31,21 @@ const miscHelpers = (() => {
     return oneMonthAgo;
   }
 
-  function parseFeedData(array, category, isReddit) {
+  function parseFeedData(array, category) {
     return array.items
       .filter((item) => new Date(item.published) > getOneMonthAgo())
       .map((item) => {
         const date = new Date(item.published);
         return {
-          magazineView: true,
-          isReddit,
-          rssId: isReddit
-            ? `${item.category.label}: ${item.url} `
-            : `${array.title}: ${item.url}`,
+          rssId: array.title + item.url,
           published: date.toLocaleString(),
           title: item.title,
           url: item.url,
-          description: isReddit
-            ? item.content || "No description available"
-            : item.description || "No description available",
-          source: isReddit ? item.category.label : array.title,
+          description:
+            typeof item.description === "string"
+              ? item.description
+              : "No description available",
+          source: array.title,
           category,
           timestamp: date.getTime(),
         };

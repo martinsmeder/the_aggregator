@@ -25,6 +25,8 @@ export default function Feeds() {
       .then((mapped) => {
         const sortedItems = sortItems(mapped);
         setItems(sortedItems);
+
+        console.log(sortedItems);
       })
       .catch((error) => setError(error));
     // .finally(() => setLoading(false));
@@ -96,13 +98,11 @@ export default function Feeds() {
             <p>
               {item.source} - {item.published}
             </p>
-            {item.isReddit ? (
-              <p>{stripHtmlTags(item.description)}</p>
-            ) : (
-              <p>{item.description}</p>
-            )}
+
+            <p>{stripHtmlTags(item.description)}</p>
+
             <a target="_blank" href={item.url} rel="noreferrer">
-              {item.isReddit ? "View discussion" : "Full article"}
+              Full article
             </a>
           </div>
         ))}

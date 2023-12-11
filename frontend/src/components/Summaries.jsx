@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 import { getSingleQuery } from "../javascript/database-logic";
-import sortItems from "../javascript/utils";
+import { sortItems } from "../javascript/utils";
 import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
 import Header from "./Header";
