@@ -1,9 +1,15 @@
+/* eslint-disable react/jsx-no-comment-textnodes */
 import {
   // getCategoryQueries,
   getAllQueries,
   getCategoryQueries,
 } from "../javascript/database-logic";
-import { sortItems, stripHtmlTags } from "../javascript/utils";
+import {
+  sortItems,
+  stripHtmlTags,
+  getUniqueItems,
+  getTimeDifference,
+} from "../javascript/utils";
 import { testDb } from "../javascript/firebase-test";
 import { useEffect, useState } from "react";
 import Header from "./Header";
@@ -17,6 +23,21 @@ export default function Feeds() {
   // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    function handleScroll() {
+      const { scrollTop, clientHeight, scrollHeight } =
+        document.documentElement;
+
+      if (scrollTop + clientHeight >= scrollHeight - 5) {
+        fetchItems(snapshot, category);
+      }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshot, category]);
+
+  useEffect(() => {
     getAllQueries(testDb)
       .then((querySnapshot) => {
         setSnapshot(querySnapshot);
@@ -25,14 +46,12 @@ export default function Feeds() {
       .then((mapped) => {
         const sortedItems = sortItems(mapped);
         setItems(sortedItems);
-
-        console.log(sortedItems);
       })
       .catch((error) => setError(error));
     // .finally(() => setLoading(false));
   }, []);
 
-  function handleLoadClick(snapshot, category) {
+  function fetchItems(snapshot, category) {
     if (category) {
       getCategoryQueries(testDb, category, snapshot)
         .then((querySnapshot) => {
@@ -40,7 +59,8 @@ export default function Feeds() {
           return querySnapshot.docs.map((doc) => doc.data());
         })
         .then((mapped) => {
-          setItems((itemsCopy) => [...itemsCopy, ...mapped]);
+          let updatedItems = getUniqueItems(items, mapped);
+          setItems(updatedItems);
         });
     } else {
       getAllQueries(testDb, snapshot)
@@ -49,7 +69,8 @@ export default function Feeds() {
           return querySnapshot.docs.map((doc) => doc.data());
         })
         .then((mapped) => {
-          setItems((itemsCopy) => [...itemsCopy, ...mapped]);
+          let updatedItems = getUniqueItems(items, mapped);
+          setItems(updatedItems);
         });
     }
   }
@@ -94,21 +115,21 @@ export default function Feeds() {
         </div>
         {items.map((item) => (
           <div key={item.rssId} className="card">
-            <h3>{item.title}</h3>
-            <p>
-              {item.source} - {item.published}
-            </p>
+            <div className="wrapper">
+              <h3>{item.title}</h3>
+              <p>{stripHtmlTags(item.description)}</p>
+              <div className="bottom">
+                <p>
+                  {item.source} // {getTimeDifference(item.published)}
+                </p>
 
-            <p>{stripHtmlTags(item.description)}</p>
-
-            <a target="_blank" href={item.url} rel="noreferrer">
-              Full article
-            </a>
+                <a target="_blank" href={item.url} rel="noreferrer">
+                  Full article
+                </a>
+              </div>
+            </div>
           </div>
         ))}
-        <button onClick={() => handleLoadClick(snapshot, category)}>
-          Load more
-        </button>
       </main>
       <Footer />
     </>

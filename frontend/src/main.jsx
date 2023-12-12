@@ -5,6 +5,7 @@ import "./styles/root.css";
 import "./styles/header.css";
 import "./styles/footer.css";
 import "./styles/summaries.css";
+import "./styles/feeds.css";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
