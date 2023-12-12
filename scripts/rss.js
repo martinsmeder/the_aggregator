@@ -34,11 +34,6 @@ const rssFeeds = (() => {
       url: "http://feeds.arstechnica.com/arstechnica/gaming/",
       isReddit: false,
     },
-    {
-      category: "gaming",
-      url: "https://www.ign.com/rss/articles/feed?tags=games",
-      isReddit: false,
-    },
   ];
 
   function getPromises(urls) {
