@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import {
-  // getCategoryQueries,
   getAllQueries,
   getCategoryQueries,
 } from "../javascript/database-logic";
@@ -17,18 +16,26 @@ import Footer from "./Footer";
 
 export default function Feeds() {
   const [category, setCategory] = useState(null);
+  const [isFixed, setIsFixed] = useState(false);
   const [snapshot, setSnapshot] = useState([]);
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
-  // const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState(null);
 
   useEffect(() => {
     function handleScroll() {
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement;
+      const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
 
-      if (scrollTop + clientHeight >= scrollHeight - 5) {
+      if (scrollPercentage > 0.9) {
         fetchItems(snapshot, category);
+      }
+
+      if (scrollTop >= 150) {
+        setIsFixed(true);
+      } else {
+        setIsFixed(false);
       }
     }
 
@@ -48,7 +55,6 @@ export default function Feeds() {
         setItems(sortedItems);
       })
       .catch((error) => setError(error));
-    // .finally(() => setLoading(false));
   }, []);
 
   function fetchItems(snapshot, category) {
@@ -78,6 +84,7 @@ export default function Feeds() {
   function handleCategoryClick(category) {
     setItems([]);
     setCategory(category);
+    setActiveCategory(category);
     if (category) {
       getCategoryQueries(testDb, category)
         .then((querySnapshot) => {
@@ -105,19 +112,41 @@ export default function Feeds() {
     <>
       <Header />
       <main id="feeds">
-        <div className="categories">
-          <button onClick={() => handleCategoryClick("ai")}>AI</button>
-          <button onClick={() => handleCategoryClick("science")}>
+        <div className={isFixed ? "categories fixed" : "categories"}>
+          <button
+            className={activeCategory === "ai" ? "active" : ""}
+            onClick={() => handleCategoryClick("ai")}
+          >
+            AI
+          </button>
+          <button
+            className={activeCategory === "science" ? "active" : ""}
+            onClick={() => handleCategoryClick("science")}
+          >
             Science
           </button>
-          <button onClick={() => handleCategoryClick("gaming")}>Gaming</button>
-          <button onClick={() => handleCategoryClick(null)}>All</button>
+          <button
+            className={activeCategory === "gaming" ? "active" : ""}
+            onClick={() => handleCategoryClick("gaming")}
+          >
+            Gaming
+          </button>
+          <button
+            className={!activeCategory ? "active" : ""}
+            onClick={() => handleCategoryClick(null)}
+          >
+            All
+          </button>
         </div>
         {items.map((item) => (
           <div key={item.rssId} className="card">
             <div className="wrapper">
-              <h3>{item.title}</h3>
-              <p>{stripHtmlTags(item.description)}</p>
+              <div className="top">
+                <h3>{item.title}</h3>
+                <p>{stripHtmlTags(item.description)}</p>
+              </div>
+
+              <hr />
               <div className="bottom">
                 <p>
                   {item.source} // {getTimeDifference(item.published)}
