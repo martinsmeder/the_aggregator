@@ -1,0 +1,19 @@
+#charts {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#charts .recharts-wrapper {
+    padding: 20px;
+}
+
+@media (max-width: 500px) {
+    #charts .recharts-surface {
+        overflow-y: hidden;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}

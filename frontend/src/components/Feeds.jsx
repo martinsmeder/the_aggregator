@@ -4,7 +4,7 @@ import {
   getCategoryQueries,
 } from "../javascript/database-logic";
 import {
-  sortItems,
+  sortFeedItems,
   stripHtmlTags,
   getUniqueItems,
   getTimeDifference,
@@ -51,7 +51,7 @@ export default function Feeds() {
         return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => {
-        const sortedItems = sortItems(mapped);
+        const sortedItems = sortFeedItems(mapped);
         setItems(sortedItems);
       })
       .catch((error) => setError(error));
