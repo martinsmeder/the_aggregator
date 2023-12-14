@@ -24,7 +24,6 @@
     top: 0;
 }
 
-
 #feeds .categories button {
     width: 75px;
     display: flex;
@@ -130,5 +129,4 @@
     #feeds h3 {
         font-size: 1rem;
     }
-
 }

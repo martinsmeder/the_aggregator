@@ -1,11 +1,3 @@
-export function sortItems(arr) {
-  return arr.sort((a, b) => {
-    const dateA = new Date(a.published);
-    const dateB = new Date(b.published);
-    return dateB - dateA;
-  });
-}
-
 export function stripHtmlTags(htmlString) {
   const doc = new DOMParser().parseFromString(htmlString, "text/html");
   return doc.body.textContent || "";
@@ -34,4 +26,30 @@ export function getTimeDifference(publishedDate) {
   } else {
     return `${daysDifference} days`;
   }
+}
+
+export function sortFeedItems(arr) {
+  return arr.sort((a, b) => {
+    const dateA = new Date(a.published);
+    const dateB = new Date(b.published);
+    return dateB - dateA;
+  });
+}
+
+export function sortJobItems(arr) {
+  return arr.sort((a, b) => {
+    const dateA = new Date(`${a.year}-${a.month}-01`);
+    const dateB = new Date(`${b.year}-${b.month}-01`);
+    return dateA - dateB;
+  });
+}
+
+export function getChartData(arr) {
+  return arr.reduce((acc, item) => {
+    const key = `${item.month}-${item.year}`;
+    acc[key] = acc[key] || { name: key };
+    acc[key][item.name] = item.count;
+
+    return acc;
+  }, {});
 }
