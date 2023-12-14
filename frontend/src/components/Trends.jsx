@@ -17,13 +17,13 @@ import { getChartData, sortJobItems } from "../javascript/utils";
 export default function Trends() {
   const [data, setData] = useState([]);
   const [months, setMonths] = useState([]);
-  const [chartWidth, setChartWidth] = useState(800); // Initial width of the chart
+  const [chartWidth, setChartWidth] = useState(800);
 
   useEffect(() => {
     function handleResize() {
       const screenWidth = window.innerWidth;
       if (screenWidth < 600) {
-        setChartWidth(400);
+        setChartWidth(500);
       } else if (screenWidth < 900) {
         setChartWidth(600);
       } else {
