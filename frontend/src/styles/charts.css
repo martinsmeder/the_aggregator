@@ -11,9 +11,37 @@
 }
 
 @media (max-width: 500px) {
-    #charts .recharts-surface {
-        overflow-y: hidden;
-        overflow-x: auto;
-        white-space: nowrap;
+    #charts {
+        transform: scale(.9);
+    }
+}
+
+@media (max-width: 450px) {
+    #charts {
+        transform: scale(.8);
+    }
+}
+
+@media (max-width: 400px) {
+    #charts {
+        transform: scale(.7);
+    }
+}
+
+@media (max-width: 350px) {
+    #charts {
+        transform: scale(.6);
+    }
+}
+
+@media (max-width: 300px) {
+    #charts {
+        transform: scale(.5);
+    }
+}
+
+@media (max-width: 250px) {
+    #charts {
+        transform: scale(.4);
     }
 }
