@@ -10,7 +10,6 @@ import Footer from "./Footer";
 export default function Summaries() {
   const [items, setItems] = useState([]);
   const [error, setError] = useState(null);
-  // const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     getSingleQuery(testDb, "summaries")
@@ -22,11 +21,9 @@ export default function Summaries() {
         setItems(sortedItems);
       })
       .catch((error) => setError(error));
-    // .finally(() => setLoading(false));
   }, []);
 
   if (error) return <p>Error: {error}</p>;
-  // if (loading) return <p>Loading...</p>;
 
   return (
     <>
