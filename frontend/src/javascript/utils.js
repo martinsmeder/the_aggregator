@@ -4,14 +4,19 @@ export function stripHtmlTags(htmlString) {
 }
 
 export function getUniqueItems(existingItems, newItems) {
+  // Copy the existing items to a new array
   const uniqueItems = [...existingItems];
 
+  // Loop through the new items
   newItems.forEach((newItem) => {
+    // Check if the new item's ID already exists in the unique items array
     if (!uniqueItems.find((item) => item.rssId === newItem.rssId)) {
+      // If not found, add the new item to the unique items array
       uniqueItems.push(newItem);
     }
   });
 
+  // Return the array containing unique items
   return uniqueItems;
 }
 
@@ -45,11 +50,20 @@ export function sortJobItems(arr) {
 }
 
 export function getChartData(arr) {
+  // Use the reduce method to transform the array into an object
   return arr.reduce((acc, item) => {
+    // Generate a unique key for each combination of month and year
     const key = `${item.month}-${item.year}`;
+
+    // Initialize the entry for the key in the accumulator or use an existing
+    // entry
     acc[key] = acc[key] || { name: key };
+
+    // Store the count of each item name within its respective month-year
+    // entry
     acc[key][item.name] = item.count;
 
+    // Return the updated accumulator
     return acc;
   }, {});
 }

@@ -22,6 +22,7 @@ export default function Trends() {
   useEffect(() => {
     function handleResize() {
       const screenWidth = window.innerWidth;
+
       if (screenWidth < 600) {
         setChartWidth(500);
       } else if (screenWidth < 900) {
@@ -32,9 +33,9 @@ export default function Trends() {
     }
 
     window.addEventListener("resize", handleResize);
-
     handleResize();
 
+    // Remove event listener on component unmount
     return () => {
       window.removeEventListener("resize", handleResize);
     };
@@ -44,18 +45,22 @@ export default function Trends() {
     getSingleQuery(testDb, "jobs")
       .then((result) => result.docs.map((doc) => doc.data()))
       .then((mapped) => {
+        // Sort job items and transform data for the chart
         const sorted = sortJobItems(mapped);
         const chartData = getChartData(sorted);
 
+        // Extract unique months and final data for the chart
         const uniqueMonths = Object.keys(chartData);
         const finalData = Object.values(chartData);
 
+        // Update state with unique months and chart data
         setMonths(uniqueMonths);
         setData(finalData);
       })
       .catch((error) => console.error(error));
   }, []);
 
+  // Define colors for the chart lines
   const lineColors = ["#FF0000", "#0000FF", "#00FF00", "#FFA500", "#800080"];
 
   return (
@@ -63,21 +68,26 @@ export default function Trends() {
       <Header />
       <main id="charts">
         <h1>Available jobs on Jooble</h1>
-
         <LineChart width={chartWidth} height={400} data={data}>
           <XAxis dataKey="name" tickCount={months.length} />
           <YAxis />
           <CartesianGrid stroke="#eee" />
           <Tooltip />
           <Legend />
+
+          {/* Retrieve the keys of the first object within the data array. If 
+          data is empty, use empty object {} to avoid errors. */}
           {Object.keys(data[0] || {})
+            // Filter out "name", "month", and "year" keys from the retrieved keys list.
             .filter((key) => !["name", "month", "year"].includes(key))
+            // Map over the filtered keys to generate a set of <Line /> components for each key-value pair.
             .map((key, index) => (
               <Line
                 key={key}
                 type="monotone"
                 dataKey={key}
                 name={key}
+                // Assign line colors from an array, cycling through colors based on line index
                 stroke={lineColors[index % lineColors.length]}
               />
             ))}

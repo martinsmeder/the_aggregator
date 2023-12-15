@@ -9,9 +9,12 @@ import {
 } from "firebase/firestore";
 
 function getLastVisible(querySnapshot) {
+  // Check if querySnapshot exists and contains documents
   if (querySnapshot && querySnapshot.docs && querySnapshot.docs.length > 0) {
+    // Return the last document from the querySnapshot
     return querySnapshot.docs[querySnapshot.docs.length - 1];
   }
+  // Return null if querySnapshot doesn't exist or has no documents
   return null;
 }
 
