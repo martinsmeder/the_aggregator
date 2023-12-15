@@ -9,7 +9,9 @@ import {
 } from "firebase/firestore";
 
 function getLastVisible(querySnapshot) {
-  if (querySnapshot) return querySnapshot.docs[querySnapshot.docs.length - 1];
+  if (querySnapshot && querySnapshot.docs && querySnapshot.docs.length > 0) {
+    return querySnapshot.docs[querySnapshot.docs.length - 1];
+  }
   return null;
 }
 

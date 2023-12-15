@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-no-comment-textnodes */
 import {
   getAllQueries,
@@ -24,14 +25,19 @@ export default function Feeds() {
 
   useEffect(() => {
     function handleScroll() {
+      // Get properties from document.documentElement
       const { scrollTop, clientHeight, scrollHeight } =
         document.documentElement;
+
+      // Calculates the scroll percentage of the page.
       const scrollPercentage = (scrollTop + clientHeight) / scrollHeight;
 
+      // If user scrolled beyond 90% of the page, fetch more items
       if (scrollPercentage > 0.9) {
         fetchItems(snapshot, category);
       }
 
+      // Add/remove fixed class based on scroll location
       if (scrollTop >= 150) {
         setIsFixed(true);
       } else {
@@ -39,18 +45,24 @@ export default function Feeds() {
       }
     }
 
+    // Add event listener to window to track scrolling behavior
     window.addEventListener("scroll", handleScroll);
+    // Remove event listener on component unmounts to avoid memory leaks
     return () => window.removeEventListener("scroll", handleScroll);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Re-run the effect whenever 'snapshot' or 'category' changes
   }, [snapshot, category]);
 
   useEffect(() => {
+    // Get initial data
     getAllQueries(testDb)
       .then((querySnapshot) => {
+        // Set snapshot to enable fetching of new items on scroll
         setSnapshot(querySnapshot);
+        // Get stored data from database query
         return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => {
+        // Sort items and update state
         const sortedItems = sortFeedItems(mapped);
         setItems(sortedItems);
       })
@@ -65,6 +77,7 @@ export default function Feeds() {
           return querySnapshot.docs.map((doc) => doc.data());
         })
         .then((mapped) => {
+          // Get unique items to avoid duplication, and update state
           let updatedItems = getUniqueItems(items, mapped);
           setItems(updatedItems);
         });
@@ -85,6 +98,8 @@ export default function Feeds() {
     setItems([]);
     setCategory(category);
     setActiveCategory(category);
+    setSnapshot([]);
+
     if (category) {
       getCategoryQueries(testDb, category)
         .then((querySnapshot) => {
@@ -92,7 +107,7 @@ export default function Feeds() {
           return querySnapshot.docs.map((doc) => doc.data());
         })
         .then((mapped) => {
-          setItems((itemsCopy) => [...itemsCopy, ...mapped]);
+          setItems(mapped);
         });
     } else {
       getAllQueries(testDb)
@@ -101,13 +116,12 @@ export default function Feeds() {
           return querySnapshot.docs.map((doc) => doc.data());
         })
         .then((mapped) => {
-          setItems((itemsCopy) => [...itemsCopy, ...mapped]);
+          setItems(mapped);
         });
     }
   }
 
   if (error) return <p>Error: {error}</p>;
-  // if (loading) return <p>Loading...</p>;
   return (
     <>
       <Header />
