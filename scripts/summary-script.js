@@ -35,14 +35,13 @@ const summaryScript = (() => {
         .catch((error) => {
           // Log the error message for the failed summary
           console.error(`Error summarizing: ${error}`);
-          // Return the original article to keep it unchanged
-          return article;
         })
     );
 
     // Return a promise that resolves when all individual promises (summarizations) are settled
     return Promise.all(promises);
   }
+
   function getSummarizedFeeds(url) {
     return getSingleFeed(url)
       .then((feedData) => summarizeArray(feedData))
@@ -65,9 +64,15 @@ const summaryScript = (() => {
           firestore.setExistingIds(querySnapshot);
           return getSummarizedFeeds(apiUrl + feedUrl);
         })
-        .then((processedData) =>
-          firestore.addToFirestore(database, "summaries", processedData)
-        )
+        .then((processedData) => {
+          // Filter out failed summaries and send successful ones to database
+          const validSummaries = processedData.filter((data) => data.summary);
+          return firestore.addToFirestore(
+            database,
+            "summaries",
+            validSummaries
+          );
+        })
         // eslint-disable-next-line no-return-assign
         .then(() => (firestore.existingIds.length = 0))
         .then(() => "New data successfully added.")

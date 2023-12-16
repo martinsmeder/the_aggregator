@@ -10,7 +10,7 @@ import {
   getUniqueItems,
   getTimeDifference,
 } from "../javascript/utils";
-import { testDb } from "../javascript/firebase-test";
+import { db } from "../javascript/firebase";
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -54,7 +54,7 @@ export default function Feeds() {
 
   useEffect(() => {
     // Get initial data
-    getAllQueries(testDb)
+    getAllQueries(db)
       .then((querySnapshot) => {
         // Set snapshot to enable fetching of new items on scroll
         setSnapshot(querySnapshot);
@@ -71,7 +71,7 @@ export default function Feeds() {
 
   function fetchItems(snapshot, category) {
     if (category) {
-      getCategoryQueries(testDb, category, snapshot)
+      getCategoryQueries(db, category, snapshot)
         .then((querySnapshot) => {
           setSnapshot(querySnapshot);
           return querySnapshot.docs.map((doc) => doc.data());
@@ -82,7 +82,7 @@ export default function Feeds() {
           setItems(updatedItems);
         });
     } else {
-      getAllQueries(testDb, snapshot)
+      getAllQueries(db, snapshot)
         .then((querySnapshot) => {
           setSnapshot(querySnapshot);
           return querySnapshot.docs.map((doc) => doc.data());
@@ -101,7 +101,7 @@ export default function Feeds() {
     setSnapshot([]);
 
     if (category) {
-      getCategoryQueries(testDb, category)
+      getCategoryQueries(db, category)
         .then((querySnapshot) => {
           setSnapshot(querySnapshot);
           return querySnapshot.docs.map((doc) => doc.data());
@@ -110,7 +110,7 @@ export default function Feeds() {
           setItems(mapped);
         });
     } else {
-      getAllQueries(testDb)
+      getAllQueries(db)
         .then((querySnapshot) => {
           setSnapshot(querySnapshot);
           return querySnapshot.docs.map((doc) => doc.data());
