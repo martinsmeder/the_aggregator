@@ -47,4 +47,4 @@ The app has three components:
 1. Fetch and parse job data using the Jooble API
 2. Sends it to the database
 
-##### The frontend renders the summarized content using React and the Recharts library
+##### The frontend renders the job data using React and the Recharts library
