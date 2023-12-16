@@ -9,7 +9,7 @@ import {
   Legend,
 } from "recharts";
 import { getSingleQuery } from "../javascript/database-logic";
-import { testDb } from "../javascript/firebase-test";
+import { db } from "../javascript/firebase";
 import Header from "./Header";
 import Footer from "./Footer";
 import { getChartData, sortJobItems } from "../javascript/utils";
@@ -42,7 +42,7 @@ export default function Trends() {
   }, []);
 
   useEffect(() => {
-    getSingleQuery(testDb, "jobs")
+    getSingleQuery(db, "jobs")
       .then((result) => result.docs.map((doc) => doc.data()))
       .then((mapped) => {
         // Sort job items and transform data for the chart

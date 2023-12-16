@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-target-blank */
 import { getSingleQuery } from "../javascript/database-logic";
 import { sortFeedItems } from "../javascript/utils";
-import { testDb } from "../javascript/firebase-test";
+import { db } from "../javascript/firebase";
 import { useEffect, useState } from "react";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -12,7 +12,7 @@ export default function Summaries() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    getSingleQuery(testDb, "summaries")
+    getSingleQuery(db, "summaries")
       .then((querySnapshot) => {
         return querySnapshot.docs.map((doc) => doc.data());
       })
