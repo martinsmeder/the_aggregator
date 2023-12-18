@@ -20,8 +20,8 @@ The app has three components:
 
 1. Remove summaries older than one month from database
 2. Fetch and parse RSS data from a single RSS feed
-3. Summarizes each articles content using the "bart-large-cnn" AI model hosted by Hugging Face
-4. Adds the summaries to the previously parsed data
+3. Summarize each articles content using the ["bart-large-cnn" AI model hosted by Hugging Face](https://huggingface.co/facebook/bart-large-cnn)
+4. Adds the newly created summaries to the previously parsed data
 5. Sends everything to the database
 
 ##### The frontend renders the summarized content using React
