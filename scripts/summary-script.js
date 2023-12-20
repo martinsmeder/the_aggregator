@@ -17,34 +17,42 @@ const summaryScript = (() => {
       .catch((error) => console.error(error));
   }
 
-  function summarizeArray(articles) {
-    // Create an array of promises for each article
-    const promises = articles.map((article) =>
-      // Call the summarize function to generate a summary for the article's content
+  function summarizeArray(articles, maxAttempts = 5) {
+    const processArticle = (article, attempt = 1) =>
       summarize({ inputs: article.content })
-        // If the summarize function resolves successfully
         .then((response) => {
-          // Create a copy of the article object to prevent mutation
+          // Update article with newly created summary
           const updatedArticle = { ...article };
-          // Assign the summary to the copied article object
           updatedArticle.summary = response[0].summary_text;
-          // Return the updated article with the added summary
           return updatedArticle;
         })
-        // If an error occurs during the summarization process
         .catch((error) => {
-          // Log the error message for the failed summary
           console.error(`Error summarizing: ${error}`);
-        })
-    );
+          // Keep calling processArticle until either the summarization
+          // succeeds or maxAttempts is reached
+          if (attempt < maxAttempts) {
+            console.log(
+              `Retrying summarization for article (${
+                attempt + 1
+              }/${maxAttempts})`
+            );
+            return processArticle(article, attempt + 1);
+          }
+          console.error(
+            `Exceeded maximum attempts (${maxAttempts}) for this article.`
+          );
+          return article;
+        });
 
-    // Return a promise that resolves when all individual promises (summarizations) are settled
+    // Create an array of promises by calling processArticle on each article
+    const promises = articles.map((article) => processArticle(article));
+
     return Promise.all(promises);
   }
 
   function getSummarizedFeeds(url) {
     return getSingleFeed(url)
-      .then((feedData) => summarizeArray(feedData))
+      .then((feedData) => summarizeArray(feedData, 5))
       .catch((error) => console.error(error));
   }
 
@@ -64,15 +72,9 @@ const summaryScript = (() => {
           firestore.setExistingIds(querySnapshot);
           return getSummarizedFeeds(apiUrl + feedUrl);
         })
-        .then((processedData) => {
-          // Filter out failed summaries and send successful ones to database
-          const validSummaries = processedData.filter((data) => data.summary);
-          return firestore.addToFirestore(
-            database,
-            "summaries",
-            validSummaries
-          );
-        })
+        .then((processedData) =>
+          firestore.addToFirestore(database, "summaries", processedData)
+        )
         // eslint-disable-next-line no-return-assign
         .then(() => (firestore.existingIds.length = 0))
         .then(() => "New data successfully added.")
@@ -95,6 +97,7 @@ const summaryScript = (() => {
   }
 
   return {
+    getSingleFeed,
     queryAndDelete,
     addRssData,
     init,
