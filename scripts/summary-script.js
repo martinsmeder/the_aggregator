@@ -7,8 +7,10 @@ const firestore = require("./database-logic");
 const miscHelpers = require("./utils");
 
 const summaryScript = (() => {
-  const apiUrl = "https://rss-to-json-serverless-api.vercel.app/api?feedURL=";
-  const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
+  const apiUrl = "https://api.rss2json.com/v1/api.json";
+  const feedUrl = "https://news.mit.edu/topic/mitmachine-learning-rss.xml";
+  const apiKey = process.env.RSS_API_KEY;
+  const fullUrl = `${apiUrl}?rss_url=${feedUrl}&api_key=${apiKey}&count=1000`;
 
   function getSingleFeed(url) {
     return fetch(url)
@@ -70,7 +72,7 @@ const summaryScript = (() => {
         .queryItems(database, "summaries", "desc", 500)
         .then((querySnapshot) => {
           firestore.setExistingIds(querySnapshot);
-          return getSummarizedFeeds(apiUrl + feedUrl);
+          return getSummarizedFeeds(fullUrl);
         })
         .then((processedData) =>
           firestore.addToFirestore(database, "summaries", processedData)
