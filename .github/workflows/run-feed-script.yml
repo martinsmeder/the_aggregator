@@ -1,13 +1,13 @@
 name: Run Feed Script Once A Day
 
-# on:
-#   push:
-#     branches:
-#       - main
-
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+
+# on:
+#   schedule:
+#     - cron: "0 0 * * *"
 
 jobs:
   run-script:
@@ -17,6 +17,10 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: "14"
-      - run: npm install
-      - run: node scripts/feed-script.js
-      - run: echo "Job ran!"
+      - name: set up environment variables and execute script
+        env:
+          RSS_API_KEY: ${{ secrets.RSS_API_KEY }}
+        run: |
+          npm install
+          node scripts/feed-script.js
+          echo "Job ran!"

@@ -31,21 +31,42 @@ const miscHelpers = (() => {
     return oneMonthAgo;
   }
 
+  // function parseFeedData(array, category) {
+  //   return array.items
+  //     .filter((item) => new Date(item.published) > getOneMonthAgo())
+  //     .map((item) => {
+  //       const date = new Date(item.published);
+  //       return {
+  //         rssId: array.title + item.url,
+  //         published: date.toLocaleString(),
+  //         title: item.title,
+  //         url: item.url,
+  //         description:
+  //           typeof item.description === "string"
+  //             ? item.description
+  //             : "No description available",
+  //         source: array.title,
+  //         category,
+  //         timestamp: date.getTime(),
+  //       };
+  //     });
+  // }
+
   function parseFeedData(array, category) {
     return array.items
-      .filter((item) => new Date(item.published) > getOneMonthAgo())
+      .filter((item) => new Date(item.pubDate) > getOneMonthAgo())
       .map((item) => {
-        const date = new Date(item.published);
+        const date = new Date(item.pubDate);
         return {
-          rssId: array.title + item.url,
+          rssId: array.feed.title + item.link,
           published: date.toLocaleString(),
           title: item.title,
-          url: item.url,
+          url: item.link,
           description:
             typeof item.description === "string"
               ? item.description
               : "No description available",
-          source: array.title,
+          source: array.feed.title,
           category,
           timestamp: date.getTime(),
         };
@@ -54,21 +75,39 @@ const miscHelpers = (() => {
 
   function parseSummaryData(array) {
     return array
-      .filter((item) => new Date(item.published) > getOneMonthAgo())
+      .filter((item) => new Date(item.pubDate) > getOneMonthAgo())
       .map((item) => {
-        const date = new Date(item.published);
+        const date = new Date(item.pubDate);
         return {
           title: item.title,
           url: item.link,
           content: item.content,
-          rssId: item.title + item.url,
+          rssId: item.title + item.link,
           published: date.toLocaleString(),
           timestamp: date.getTime(),
-          image: item.media.content.url,
+          image: item.enclosure.link,
           summary: null,
         };
       });
   }
+
+  // function parseSummaryData(array) {
+  //   return array
+  //     .filter((item) => new Date(item.published) > getOneMonthAgo())
+  //     .map((item) => {
+  //       const date = new Date(item.published);
+  //       return {
+  //         title: item.title,
+  //         url: item.link,
+  //         content: item.content,
+  //         rssId: item.title + item.url,
+  //         published: date.toLocaleString(),
+  //         timestamp: date.getTime(),
+  //         image: item.media.content.url,
+  //         summary: null,
+  //       };
+  //     });
+  // }
 
   return {
     getCurrentMonth,
