@@ -108,27 +108,5 @@ const rssFeeds = (() => {
 })();
 
 // rssFeeds.checkFeeds(rssFeeds.urls).then((result) => console.log(result));
-// rssFeeds
-//   .getRssData(rssFeeds.urls)
-//   .then((result) => console.log(result))
-//   .catch((error) => console.error(error));
-
-//  'https://news.mit.edu/topic/mitmachine-learning-rss.xml',
-//  'http://www.sciencedaily.com/rss/computers_math/artificial_intelligence.xml',
-//  'http://feeds.arstechnica.com/arstechnica/science'
 
 module.exports = rssFeeds;
-
-// const apiUrl = "https://api.rss2json.com/v1/api.json";
-// const feedUrl = "https://news.mit.edu/topic/mitcomputers-rss.xml";
-// const apiKey = process.env.RSS_API_KEY;
-// const fullUrl = `${apiUrl}?rss_url=${feedUrl}&api_key=${apiKey}&count=1000`;
-
-// fetch(fullUrl)
-//   .then((response) => response.json())
-//   .then((result) => console.log(result.items[0].enclosure.link))
-//   .catch((error) => console.error(error));
-
-// // 'title', 'pubDate', 'link', 'guid', 'author', 'thumbnail',
-// // 'description', 'content', 'enclosure', 'categories'
-// // source: array.feed.title
