@@ -1,13 +1,13 @@
 name: Run Feed Script Once A Day
 
-on:
-  push:
-    branches:
-      - main
-
 # on:
-#   schedule:
-#     - cron: "0 0 * * *"
+#   push:
+#     branches:
+#       - main
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   run-script:
