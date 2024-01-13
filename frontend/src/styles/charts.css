@@ -1,4 +1,5 @@
 #charts {
+    width: 95%;
     margin-top: 20px;
     margin-bottom: 20px;
     padding-top: 20px;
@@ -10,46 +11,48 @@
     border-radius: 20px;
     background: #000;
     box-shadow: 0 0 .5rem #FFF;
-}
-
-#charts .recharts-wrapper {
-    padding: 20px;
-}
-
-
-
-@media (max-width: 500px) {
-    #charts {
-        transform: scale(.9);
-    }
-}
-
-@media (max-width: 450px) {
-    #charts {
-        transform: scale(.8);
-    }
+    padding: 10px;
 }
 
 @media (max-width: 400px) {
+    #charts h1 {
+        font-size: 1rem;
+    }
+
+    #charts {
+        width: 380px;
+        height: 220px;
+        transform: scale(.85);
+    }
+
+}
+
+@media (max-width: 350px) {
     #charts {
         transform: scale(.7);
     }
 }
 
-@media (max-width: 350px) {
+@media (max-width: 300px) {
+    #charts {
+        transform: scale(.65);
+    }
+}
+
+@media (max-width: 275px) {
     #charts {
         transform: scale(.6);
     }
-}
-
-@media (max-width: 300px) {
-    #charts {
-        transform: scale(.5);
-    }
-}
+} 
 
 @media (max-width: 250px) {
     #charts {
-        transform: scale(.4);
+        transform: scale(.55);
     }
-}
+}  
+
+@media (max-width: 225px) {
+    #charts {
+        transform: scale(.5);
+    }
+} 
