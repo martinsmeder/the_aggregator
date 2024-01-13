@@ -1,98 +1,107 @@
-import { useState, useEffect } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-} from "recharts";
 import { getSingleQuery } from "../javascript/database-logic";
 import { db } from "../javascript/firebase";
 import Header from "./Header";
 import Footer from "./Footer";
-import { getChartData, sortJobItems } from "../javascript/utils";
+import { sortJobItems } from "../javascript/utils";
+import { useState, useEffect } from "react";
+
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
+
+const options = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: "top",
+    },
+  },
+};
 
 export default function Trends() {
-  const [data, setData] = useState([]);
-  const [months, setMonths] = useState([]);
-  const [chartWidth, setChartWidth] = useState(800);
+  const [chartData, setChartData] = useState({ labels: [], datasets: [] });
 
-  useEffect(() => {
-    function handleResize() {
-      const screenWidth = window.innerWidth;
-
-      if (screenWidth < 600) {
-        setChartWidth(500);
-      } else if (screenWidth < 900) {
-        setChartWidth(600);
-      } else {
-        setChartWidth(800);
-      }
-    }
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    // Remove event listener on component unmount
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+  const lineColors = ["#FF0000", "#0000FF", "#00FF00", "#FFA500", "#800080"];
+  const backgroundColors = [
+    "rgba(255, 0, 0, 0.5)",
+    "rgba(0, 0, 255, 0.5)",
+    "rgba(0, 255, 0, 0.5)",
+    "rgba(255, 165, 0, 0.5)",
+    "rgba(128, 0, 128, 0.5)",
+  ];
 
   useEffect(() => {
     getSingleQuery(db, "jobs")
       .then((result) => result.docs.map((doc) => doc.data()))
       .then((mapped) => {
-        // Sort job items and transform data for the chart
+        // Sort job data
         const sorted = sortJobItems(mapped);
-        const chartData = getChartData(sorted);
+        //Transform data for the chart
+        const chartData = sorted.reduce(
+          (acc, item, index) => {
+            // Create label for x-axis
+            const label = `${item.month}-${item.year}`;
+            // Add label to accumulator if not present
+            if (!acc.labels.includes(label)) {
+              acc.labels.push(label);
+            }
 
-        // Extract unique months and final data for the chart
-        const uniqueMonths = Object.keys(chartData);
-        const finalData = Object.values(chartData);
+            // Find index of dataset with the same label
+            const datasetIndex = acc.datasets.findIndex(
+              (dataset) => dataset.label === item.name
+            );
 
-        // Update state with unique months and chart data
-        setMonths(uniqueMonths);
-        setData(finalData);
+            // If dataset with the label doesn't exist, create a new one
+            if (datasetIndex === -1) {
+              acc.datasets.push({
+                label: item.name,
+                data: [item.count],
+                borderColor: lineColors[index % lineColors.length],
+                backgroundColor:
+                  backgroundColors[index % backgroundColors.length],
+                borderWidth: 1,
+              });
+            } else {
+              // If dataset exists, add count to its data array
+              acc.datasets[datasetIndex].data.push(item.count);
+            }
+
+            return acc; // Return updated accumulator
+          },
+          { labels: [], datasets: [] } // Initial accumulator with empty labels and datasets arrays
+        );
+        setChartData(chartData);
       })
       .catch((error) => console.error(error));
   }, []);
 
-  // Define colors for the chart lines
-  const lineColors = ["#FF0000", "#0000FF", "#00FF00", "#FFA500", "#800080"];
-
   return (
     <>
       <Header />
+
       <main id="charts">
         <h1>Available jobs on Jooble</h1>
-        <LineChart width={chartWidth} height={400} data={data}>
-          <XAxis dataKey="name" tickCount={months.length} />
-          <YAxis />
-          <CartesianGrid stroke="#eee" />
-          <Tooltip />
-          <Legend />
-
-          {/* Retrieve the keys of the first object within the data array. If 
-          data is empty, use empty object {} to avoid errors. */}
-          {Object.keys(data[0] || {})
-            // Filter out "name", "month", and "year" keys from the retrieved keys list.
-            .filter((key) => !["name", "month", "year"].includes(key))
-            // Map over the filtered keys to generate a set of <Line /> components for each key-value pair.
-            .map((key, index) => (
-              <Line
-                key={key}
-                type="monotone"
-                dataKey={key}
-                name={key}
-                // Assign line colors from an array, cycling through colors based on line index
-                stroke={lineColors[index % lineColors.length]}
-              />
-            ))}
-        </LineChart>
+        <Line options={options} data={chartData} />
       </main>
+
       <Footer />
     </>
   );
