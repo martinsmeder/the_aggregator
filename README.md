@@ -96,7 +96,7 @@ Install frontend dependencies using npm:
 npm install
 ```
 
-### 5. Set Up Environment Variables:
+### 5. Set Up Environment Variables and Github Secrets:
 
 Get API keys:
 
@@ -110,7 +110,7 @@ Set up environment variables:
 - Use the provided .env-example file as a template
 - Replace the placeholder values with your own credentials
 
-Set up github secrets (if using github actions for automation)
+Set up github secrets (if using github actions for automation):
 
 - Go to you remote repo on GitHub
 - Then Settings -> Secrets and variables -> Actions -> New repository secret
