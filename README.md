@@ -4,7 +4,7 @@
 
 Live demo: https://the-aggregator.vercel.app/
 
-An aggregator app build with JavaScript and React. Powered by Firebase, Hugging Face and Jooble.
+An aggregator app build with JavaScript and React. Powered by Firebase, Hugging Face, Jooble and Github Actions.
 
 This project is tested with Browserstack.
 
@@ -104,11 +104,17 @@ Get API keys:
 - [Hugging Face](https://huggingface.co/)
 - [Jooble](https://jooble.org/api/about)
 
-Set up variables:
+Set up environment variables:
 
 - Create a .env file in the project root
 - Use the provided .env-example file as a template
 - Replace the placeholder values with your own credentials
+
+Set up github secrets (if using github actions for automation)
+
+- Go to you remote repo on GitHub
+- Then Settings -> Secrets and variables -> Actions -> New repository secret
+- Add your API keys using the same names as in the .env-example file
 
 ### 6. Configure Firebase:
 
