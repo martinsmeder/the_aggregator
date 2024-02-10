@@ -130,9 +130,21 @@ Set up variables:
    - Repeat steps 1-3 and replace the contents in the test files if you
      choose to use a second database for testing
 
-### 7. Start Development Server for Frontend:
+### 7. Start Development Server:
 
-Start development server (from the frontend folder):
+Make sure that your are in the frontend folder by typing in the terminal:
+
+```bash
+pwd
+```
+
+If not:
+
+```bash
+cd frontend/
+```
+
+Start development server:
 
 ```bash
 npm run dev
@@ -140,8 +152,8 @@ npm run dev
 
 ### 8. Testing:
 
-Uncomment all tests except the one you're currently testing
-In the terminal, run:
+- Uncomment all tests except the one you're currently testing
+- In the terminal, run:
 
 ```bash
 npm run test
