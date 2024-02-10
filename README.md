@@ -53,6 +53,11 @@ The app has three components:
 
 ## Setup steps
 
+Prerequisites:
+
+- Git installed
+- Node.js installed
+
 ### 1. Clone the Repository:
 
 Open a terminal and run the following command to clone the repository to your local machine:
