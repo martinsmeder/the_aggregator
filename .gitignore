@@ -2,6 +2,5 @@ node_modules
 .vscode
 .eslintrc.json
 .prettierrc
-inför-intervju.txt
 todo.txt
 .env
