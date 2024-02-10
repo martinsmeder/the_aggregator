@@ -53,7 +53,7 @@ The app has three components:
 
 ## Setup steps
 
-##### 1. Clone the Repository:
+### 1. Clone the Repository:
 
 Open a terminal and run the following command to clone the repository to your local machine:
 
@@ -61,7 +61,7 @@ Open a terminal and run the following command to clone the repository to your lo
 git clone https://github.com/martinsmeder/the_aggregator.git
 ```
 
-##### 2. Navigate to the Project Directory:
+### 2. Navigate to the Project Directory:
 
 Change your working directory to the project folder:
 
@@ -69,7 +69,7 @@ Change your working directory to the project folder:
 cd the_aggregator
 ```
 
-##### 3. Install Dependencies for Scripts Folder:
+### 3. Install Dependencies for Scripts Folder:
 
 Install the project dependencies using npm:
 
@@ -77,7 +77,7 @@ Install the project dependencies using npm:
 npm install
 ```
 
-##### 4. Install Dependencies for Frontend Folder:
+### 4. Install Dependencies for Frontend Folder:
 
 Change your working directory to the frontend folder:
 
@@ -91,42 +91,46 @@ Install frontend dependencies using npm:
 npm install
 ```
 
-##### 5. Set Up Environment Variables:
+### 5. Set Up Environment Variables:
 
 Get API keys:
-[RSS2JSON](https://rss2json.com/)
-[Hugging Face](https://huggingface.co/)
-[Jooble](https://jooble.org/api/about)
-Create a .env file in the project root
-Use the provided .env-example file as a template
-Replace the placeholder values with your own credentials
 
-##### 6. Configure Firebase:
+- [RSS2JSON](https://rss2json.com/)
+- [Hugging Face](https://huggingface.co/)
+- [Jooble](https://jooble.org/api/about)
 
-1. ###### Create a Firebase Project And Add a Web App:
+Set up variables:
+
+- Create a .env file in the project root
+- Use the provided .env-example file as a template
+- Replace the placeholder values with your own credentials
+
+### 6. Configure Firebase:
+
+1. #### Create a Firebase Project And Add a Web App:
 
    - Go to the [Firebase Docs](https://firebase.google.com/docs/web/setup).
    - Follow the instructions from Step 1 (Create a Firebase project &
      Register your app)
 
-2. ###### Obtain Firebase Configuration:
+2. #### Obtain Firebase Configuration:
 
    - In the Firebase Console, navigate to Project Settings > General.
    - Scroll down to the "Your apps" section and find the web app you added.
    - Copy the configuration object (usually labeled as "Firebase SDK snippet") containing values like `apiKey`, `authDomain`, `projectId`, etc.
 
-3. ###### Replace Firebase Configuration in Your Project:
+3. #### Replace Firebase Configuration in Your Project:
 
    - Open the `firebase-cjs.js` file in scripts folder
    - Replace the existing Firebase configuration with the one you copied from the Firebase Console
    - Repeat for `firebase.js` in frontend/src/javascript folder
 
-4. ###### Setup Firebase Testing:
+4. #### Setup Firebase Testing:
 
    - Repeat steps 1-3 and replace the contents in the test files if you
      choose to use a second database for testing
 
-##### 7. Start Development Server for Frontend:
+### 7. Start Development Server for Frontend:
 
 Start development server (from the frontend folder):
 
@@ -134,7 +138,7 @@ Start development server (from the frontend folder):
 npm run dev
 ```
 
-##### 8. Testing:
+### 8. Testing:
 
 Uncomment all tests except the one you're currently testing
 In the terminal, run:
