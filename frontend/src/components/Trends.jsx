@@ -1,8 +1,8 @@
 import { getSingleQuery } from "../javascript/database-logic";
 import { db } from "../javascript/firebase";
+import { sortJobItems } from "../javascript/utils";
 import Header from "./Header";
 import Footer from "./Footer";
-import { sortJobItems } from "../javascript/utils";
 import { useState, useEffect } from "react";
 
 import {
