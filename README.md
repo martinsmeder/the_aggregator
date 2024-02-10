@@ -6,6 +6,8 @@ Live demo: https://the-aggregator.vercel.app/
 
 An aggregator app build with JavaScript and React. Powered by Firebase, Hugging Face and Jooble.
 
+This project is tested with Browserstack.
+
 The app has three components:
 
 - AI summarization
