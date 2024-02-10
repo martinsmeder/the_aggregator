@@ -41,29 +41,28 @@ export function sortFeedItems(arr) {
   });
 }
 
-export function sortJobItems(arr) {
-  return arr.sort((a, b) => {
-    const dateA = new Date(`${a.year}-${a.month}-01`);
-    const dateB = new Date(`${b.year}-${b.month}-01`);
+export function sortJobItems(items) {
+  // Convert month names to numbers (in order to sort the data correctly
+  // across different platforms)
+  const monthToNumber = {
+    January: 0,
+    February: 1,
+    March: 2,
+    April: 3,
+    May: 4,
+    June: 5,
+    July: 6,
+    August: 7,
+    September: 8,
+    October: 9,
+    November: 10,
+    December: 11,
+  };
+
+  // Sort based on year and month
+  return items.sort((a, b) => {
+    const dateA = new Date(a.year, monthToNumber[a.month]);
+    const dateB = new Date(b.year, monthToNumber[b.month]);
     return dateA - dateB;
   });
-}
-
-export function getChartData(arr) {
-  // Use the reduce method to transform the array into an object
-  return arr.reduce((acc, item) => {
-    // Generate a unique key for each combination of month and year
-    const key = `${item.month}-${item.year}`;
-
-    // Initialize the entry for the key in the accumulator or use an existing
-    // entry
-    acc[key] = acc[key] || { name: key };
-
-    // Store the count of each item name within its respective month-year
-    // entry
-    acc[key][item.name] = item.count;
-
-    // Return the updated accumulator
-    return acc;
-  }, {});
 }
