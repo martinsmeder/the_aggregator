@@ -45,5 +45,27 @@ function addNewsData(database) {
         .catch((error) => console.error(`Error: ${error}`));
 }
 
-addNewsData(testDb).then(result => console.log(result))
+function queryAndDelete(database) {
+    return firestore
+        .queryItems(database, "news", "asc", 1000)
+        .then((querySnapshot) => firestore.deleteOlderThanOneMonth(querySnapshot))
+        .then(() => "Old data successfully deleted.")
+        .catch((error) => console.error(`Error: ${error}`));
+}
+
+function init(database) {
+    queryAndDelete(database)
+        .then((result) => {
+            console.log(result);
+            return addNewsData(database);
+        })
+        .then((result) => {
+            console.log(result);
+            console.log("Script executed successfully.");
+        })
+        .catch((error) => console.error(`Error: ${error}`))
+        .finally(() => process.exit(0)); // Terminate script
+}
+
+init(testDb)
 
