@@ -10,10 +10,10 @@ const {
 const miscHelpers = require("./utils");
 
 const firestore = (() => {
-  const existingIds = [];
+  const existingUrls = [];
 
-  function setExistingIds(querySnapshot) {
-    querySnapshot.docs.forEach((doc) => existingIds.push(doc.data().rssId));
+  function setExistingUrls(querySnapshot) {
+    querySnapshot.docs.forEach((doc) => existingUrls.push(doc.data().url));
   }
 
   function queryItems(database, collectionName, order, itemLimit) {
@@ -64,14 +64,14 @@ const firestore = (() => {
 
     // Iterate over the processed data items
     processedData.forEach((item) => {
-      if (!existingIds.includes(item.rssId)) {
+      if (!existingUrls.includes(item.url)) {
         // Create a promise to add the item to the Firestore collection
         const promise = addDoc(
           collection(database, collectionName),
           item
         ).catch((error) =>
           // If there's an error while adding, log an error message
-          console.log(`Error writing ${item.rssId}: ${error}`)
+          console.log(`Error writing ${item.title}: ${error}`)
         );
 
         writePromises.push(promise);
@@ -89,8 +89,8 @@ const firestore = (() => {
   }
 
   return {
-    existingIds,
-    setExistingIds,
+    existingUrls,
+    setExistingUrls,
     queryItems,
     deleteOlderThanOneYear,
     deleteOlderThanOneMonth,
