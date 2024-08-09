@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Summaries from "./Summaries";
-import Feeds from "./Feeds";
+import News from "./News";
 import Trends from "./Trends";
 
 function App() {
@@ -10,8 +10,8 @@ function App() {
       element: <Summaries />,
     },
     {
-      path: "feeds",
-      element: <Feeds />,
+      path: "news",
+      element: <News />,
     },
     {
       path: "trends",

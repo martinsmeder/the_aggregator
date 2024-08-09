@@ -28,12 +28,12 @@ export default function Header() {
         </Link>
 
         <Link
-          to="/feeds"
-          onClick={() => handleClick("/feeds")}
-          className={activeLink === "/feeds" ? "active" : ""}
+          to="/news"
+          onClick={() => handleClick("/news")}
+          className={activeLink === "/news" ? "active" : ""}
         >
           <img src="feeds.png" alt="Feeds" />
-          <p>Feeds</p>
+          <p>News</p>
         </Link>
 
         <Link

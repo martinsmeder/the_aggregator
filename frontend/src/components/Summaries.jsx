@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/jsx-no-target-blank */
 import { getSingleQuery } from "../javascript/database-logic";
-import { sortFeedItems } from "../javascript/utils";
+import { sortItems } from "../javascript/utils";
 import { db } from "../javascript/firebase";
 import { useEffect, useState } from "react";
 import Header from "./Header";
@@ -17,7 +17,7 @@ export default function Summaries() {
         return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => {
-        const sortedItems = sortFeedItems(mapped);
+        const sortedItems = sortItems(mapped);
         setItems(sortedItems);
       })
       .catch((error) => setError(error));

@@ -5,7 +5,7 @@ import "./styles/root.css";
 import "./styles/header.css";
 import "./styles/footer.css";
 import "./styles/summaries.css";
-import "./styles/feeds.css";
+import "./styles/news.css";
 import "./styles/charts.css";
 import ParticleBackground from "./components/ParticleBackground";
 
