@@ -3,6 +3,7 @@
 import {
   getAllQueries,
   getCategoryQueries,
+  getNews,
 } from "../javascript/database-logic";
 import {
   sortFeedItems,
@@ -54,7 +55,8 @@ export default function Feeds() {
 
   useEffect(() => {
     // Get initial data
-    getAllQueries(db)
+    // getAllQueries(db)
+    getNews(db)
       .then((querySnapshot) => {
         // Set snapshot to enable fetching of new items on scroll
         setSnapshot(querySnapshot);
@@ -126,7 +128,7 @@ export default function Feeds() {
     <>
       <Header />
       <main id="feeds">
-        <div className={isFixed ? "categories fixed" : "categories"}>
+        {/* <div className={isFixed ? "categories fixed" : "categories"}>
           <button
             className={activeCategory === "ai" ? "active" : ""}
             onClick={() => handleCategoryClick("ai")}
@@ -151,13 +153,13 @@ export default function Feeds() {
           >
             All
           </button>
-        </div>
+        </div> */}
         {items.map((item) => (
-          <div key={item.rssId} className="card">
+          <div key={item.url} className="card">
             <div className="wrapper">
               <div className="top">
                 <h3>{item.title}</h3>
-                <p>{stripHtmlTags(item.description)}</p>
+                {/* <p>{stripHtmlTags(item.description)}</p> */}
               </div>
 
               <hr />

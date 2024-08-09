@@ -66,3 +66,21 @@ export function getAllQueries(database, querySnapshot = null) {
 
   return getDocs(q);
 }
+
+export function getNews(database, querySnapshot = null) {
+  const collectionRef = collection(database, "news");
+  const lastVisible = getLastVisible(querySnapshot);
+
+  let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
+
+  if (lastVisible) {
+    q = query(
+      collectionRef,
+      orderBy("timestamp", "desc"),
+      limit(10),
+      startAfter(lastVisible)
+    );
+  }
+
+  return getDocs(q);
+}
