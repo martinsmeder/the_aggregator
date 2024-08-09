@@ -1,14 +1,14 @@
 name: Run News Script Once A Day
 
-on:
-  push:
-    branches:
-      - main
-      - the_aggregator_2
-
 # on:
-#   schedule:
-#     - cron: "0 0 * * *"
+#   push:
+#     branches:
+#       - main
+#       - the_aggregator_2 // Remove line when merged with main. (works)
+
+on:
+  schedule:
+    - cron: "0 0 * * *"
 
 jobs:
   run-script:
