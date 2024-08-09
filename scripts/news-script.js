@@ -1,7 +1,7 @@
 require("dotenv").config();
 const fetch = require("node-fetch");
 const firestore = require("./database-logic");
-const { testDb } = require("./firebase-test-cjs");
+const { db } = require("./firebase-cjs");
 
 const apiUrl = "https://newsapi.org/v2/top-headlines?";
 const parameters = "country=us&category=technology";
@@ -67,5 +67,5 @@ function init(database) {
         .finally(() => process.exit(0)); // Terminate script
 }
 
-init(testDb)
+init(db)
 

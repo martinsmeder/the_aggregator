@@ -1,13 +1,14 @@
-name: Run Feed Script Once A Day
-
-# on:
-#   push:
-#     branches:
-#       - main
+name: Run News Script Once A Day
 
 on:
-  schedule:
-    - cron: "0 0 * * *"
+  push:
+    branches:
+      - main
+      - the_aggregator_2
+
+# on:
+#   schedule:
+#     - cron: "0 0 * * *"
 
 jobs:
   run-script:
@@ -19,8 +20,8 @@ jobs:
           node-version: "14"
       - name: set up environment variables and execute script
         env:
-          RSS_API_KEY: ${{ secrets.RSS_API_KEY }}
+          NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
         run: |
           npm install
-          node scripts/feed-script.js
+          node scripts/news-script.js
           echo "Job ran!"
