@@ -1,5 +1,10 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
+const firestore = require("./database-logic");
+const { testDb } = require("./firebase-test-cjs");
+
+// Add check for previously scraped links when choosing link to scrape
+// When visited links == counted links, clear visited link collection and start over
 
 function getLinks() {
     const url = 'https://en.wikipedia.org/wiki/List_of_emerging_technologies';
@@ -66,12 +71,35 @@ function scrapeText(url) {
         });
 }
 
+function getUniqueLink(links, visitedLinks) {
+    return new Promise((resolve) => {
+        let randomLink = getRandomLink(links);
+
+        while (visitedLinks.includes(randomLink)) { // If randomlink already exist...
+            randomLink = getRandomLink(links); // ...keep generating random links.
+        }
+
+        resolve(randomLink); // Resolve promise when unique link is found.
+    });
+}
+
 getLinks()
     .then(links => {
         console.log("Number of links: " + links.length);
         console.log('Scraping text from a random link...');
-        const randomLink = getRandomLink(links);
-        return scrapeText(randomLink);
+
+        return firestore.queryItems(testDb, 'visited', 'asc', 100)
+            .then(querySnapshot => firestore.getVisitedLinks(querySnapshot))
+            .then(visitedLinks => {
+                return getUniqueLink(links, visitedLinks);
+            })
+            .then(uniqueLink => {
+                return firestore.addVisitedLinkToFirestore(testDb, uniqueLink)
+                    .then(() => uniqueLink);
+            });
+    })
+    .then(uniqueLink => {
+        return scrapeText(uniqueLink);
     })
     .then(result => {
         console.log('Title:', result.title);
