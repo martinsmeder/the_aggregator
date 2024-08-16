@@ -3,7 +3,6 @@ const cheerio = require('cheerio');
 const firestore = require("./database-logic");
 const { testDb } = require("./firebase-test-cjs");
 
-// Add check for previously scraped links when choosing link to scrape
 // When visited links == counted links, clear visited link collection and start over
 
 function getLinks() {
@@ -83,26 +82,78 @@ function getUniqueLink(links, visitedLinks) {
     });
 }
 
-getLinks()
-    .then(links => {
-        console.log("Number of links: " + links.length);
-        console.log('Scraping text from a random link...');
+function init() {
+    return getLinks()
+        .then(links => {
+            console.log("Number of links: " + links.length);
+            console.log('Scraping text from a random link...');
 
-        return firestore.queryItems(testDb, 'visited', 'asc', 100)
-            .then(querySnapshot => firestore.getVisitedLinks(querySnapshot))
-            .then(visitedLinks => {
-                return getUniqueLink(links, visitedLinks);
-            })
-            .then(uniqueLink => {
-                return firestore.addVisitedLinkToFirestore(testDb, uniqueLink)
-                    .then(() => uniqueLink);
-            });
-    })
-    .then(uniqueLink => {
-        return scrapeText(uniqueLink);
-    })
-    .then(result => {
-        console.log('Title:', result.title);
-        console.log('Body Text:', result.bodyText);
-    })
-    .catch(error => console.error('Error:', error));
+            let querySnapshot;
+
+            return firestore.queryItems(testDb, 'visited', 'asc', 1000)
+                .then(snapshot => {
+                    querySnapshot = snapshot;
+                    return firestore.getVisitedLinks(querySnapshot);
+                })
+                .then(visitedLinks => {
+                    console.log(`Visited Links: ${visitedLinks.length}`);
+                    console.log(`Total Links: ${links.length}`);
+
+                    if (visitedLinks.length >= links.length) {
+                        console.log('Clearing Firestore...');
+                        return firestore.clearFirestore(querySnapshot)
+                            .then(() => {
+                                return getUniqueLink(links, []);
+                            });
+                    } else {
+                        return getUniqueLink(links, visitedLinks);
+                    }
+                })
+                .then(uniqueLink => {
+                    console.log(`Found Unique Link: ${uniqueLink}`);
+                    return firestore.addVisitedLinkToFirestore(testDb, uniqueLink)
+                        .then(() => uniqueLink);
+                })
+                .then(uniqueLink => {
+                    console.log(`Scraping text from: ${uniqueLink}`);
+                    return scrapeText(uniqueLink);
+                })
+                .then(result => {
+                    console.log('Title:', result.title);
+                    console.log('Body Text:', result.bodyText);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+}
+
+init();
+
+// function runSequentialTests(times) {
+//     let promiseChain = Promise.resolve();
+
+//     for (let i = 0; i < times; i++) {
+//         promiseChain = promiseChain.then(() => {
+//             console.log(`Running test iteration: ${i + 1}`);
+//             return init();
+//         });
+//     }
+
+//     promiseChain.then(() => {
+//         console.log('All tests completed successfully.');
+//     }).catch(error => {
+//         console.error('Error during testing:', error);
+//     });
+// }
+
+// // Run the tests sequentially
+// runSequentialTests(100);
+
+// firestore.queryItems(testDb, "visited", "asc", 1000)
+//     .then(querySnapshot => firestore.clearFirestore(querySnapshot))
+//     .catch(error => console.error(error))
+
+// getLinks()
+//     .then(allLinks => allLinks.forEach(link => firestore.addVisitedLinkToFirestore(testDb, link)))
+//     .catch(error => console.error(error))
