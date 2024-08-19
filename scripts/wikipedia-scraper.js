@@ -82,7 +82,7 @@ function getUniqueLink(links, visitedLinks) {
     });
 }
 
-function init() {
+function getWikipediaText() {
     return getLinks()
         .then(links => {
             console.log("Number of links: " + links.length);
@@ -118,17 +118,13 @@ function init() {
                     console.log(`Scraping text from: ${uniqueLink}`);
                     return scrapeText(uniqueLink);
                 })
-                .then(result => {
-                    console.log('Title:', result.title);
-                    console.log('Body Text:', result.bodyText);
-                })
                 .catch(error => {
                     console.error('Error:', error);
                 });
         });
 }
 
-init();
+module.exports = getWikipediaText;
 
 // function runSequentialTests(times) {
 //     let promiseChain = Promise.resolve();
