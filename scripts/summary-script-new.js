@@ -89,6 +89,7 @@ function getWikipediaText() {
                     return firestore.getVisitedLinks(snapshot)
                         .then(visitedLinks => {
                             if (visitedLinks.length >= links.length) {
+                                console.log("All links summarized.")
                                 return null;
                             } else {
                                 return getUniqueLink(links, visitedLinks)
@@ -136,7 +137,18 @@ function init() {
 
 init()
 
-// Add all links to database
-// Check that nothing gets added afterwords 
+// getLinks().then(links => {
+//     const promises = links.map(link => {
+//         return firestore.addVisitedLinkToFirestore(testDb, link);
+//     });
+
+//     return Promise.all(promises);
+// })
+//     .then(() => {
+//         console.log('All links have been added to Firestore.');
+//     })
+//     .catch(error => {
+//         console.error('Error:', error);
+//     });
 
 
