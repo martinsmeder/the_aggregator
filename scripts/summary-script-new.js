@@ -89,7 +89,6 @@ function getWikipediaText() {
                     return firestore.getVisitedLinks(snapshot)
                         .then(visitedLinks => {
                             if (visitedLinks.length >= links.length) {
-                                console.log("All links are already in the database.");
                                 return null;
                             } else {
                                 return getUniqueLink(links, visitedLinks)
@@ -124,10 +123,20 @@ function addSummaryData(wikiText) {
         });
 }
 
-getWikipediaText()
-    .then(wikiText => {
-        return addSummaryData(wikiText);
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+function init() {
+    return getWikipediaText()
+        .then(wikiText => {
+            return addSummaryData(wikiText);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        .finally(() => process.exit(0));
+}
+
+init()
+
+// Add all links to database
+// Check that nothing gets added afterwords 
+
+
