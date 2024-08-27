@@ -137,6 +137,7 @@ function init() {
 
 init()
 
+//// Test
 // getLinks().then(links => {
 //     const promises = links.map(link => {
 //         return firestore.addVisitedLinkToFirestore(testDb, link);
