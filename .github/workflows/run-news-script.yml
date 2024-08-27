@@ -4,7 +4,7 @@ name: Run News Script Once A Day
 #   push:
 #     branches:
 #       - main
-#       - the_aggregator_2 // Remove line when merged with main. (works)
+#       - the_aggregator_2
 
 on:
   schedule:
