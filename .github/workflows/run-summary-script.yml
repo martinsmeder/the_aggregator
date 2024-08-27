@@ -10,22 +10,38 @@ on:
 #   schedule:
 #     - cron: "0 0 * * *"
 
+# jobs:
+#   run-summary-script:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Setup Node.js
+#         uses: actions/setup-node@v2
+#         with:
+#           node-version: "14"
+
+#       - name: Install dependencies
+#         run: npm install
+
+#       - name: Run Summary Script
+#         env:
+#           HF_API_TOKEN: ${{ secrets.HF_API_TOKEN }}
+#         run: node scripts/summary-script-new.js
+
 jobs:
-  run-summary-script:
+  run-script:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "14"
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Run Summary Script
+      - name: set up environment variables and execute script
         env:
           HF_API_TOKEN: ${{ secrets.HF_API_TOKEN }}
-        run: node scripts/summary-script-new.js
+        run: |
+          npm install
+          node scripts/summary-script-new.js
+          echo "Job ran!"
