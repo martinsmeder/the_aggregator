@@ -1,7 +1,7 @@
 const axios = require('axios');
 const cheerio = require('cheerio');
 const firestore = require("./database-logic");
-const { testDb } = require("./firebase-test-cjs");
+const { db } = require("./firebase-cjs");
 const summarize = require("./huggingface");
 
 function getLinks() {
@@ -84,7 +84,7 @@ function getUniqueLink(links, visitedLinks) {
 function getWikipediaText() {
     return getLinks()
         .then(links => {
-            return firestore.queryItems(testDb, 'visited', 'asc', 1000)
+            return firestore.queryItems(db, 'visited', 'asc', 1000)
                 .then(snapshot => {
                     return firestore.getVisitedLinks(snapshot)
                         .then(visitedLinks => {
@@ -94,7 +94,7 @@ function getWikipediaText() {
                             } else {
                                 return getUniqueLink(links, visitedLinks)
                                     .then(uniqueLink => {
-                                        return firestore.addVisitedLinkToFirestore(testDb, uniqueLink)
+                                        return firestore.addVisitedLinkToFirestore(db, uniqueLink)
                                             .then(() => scrapeText(uniqueLink));
                                     });
                             }
@@ -117,7 +117,7 @@ function addSummaryData(wikiText) {
                 title: wikiText.title,
                 summary: summarizedText[0].summary_text
             };
-            return firestore.addToFirestore(testDb, "summaries", [summary]);
+            return firestore.addToFirestore(db, "summaries", [summary]);
         })
         .catch(error => {
             console.error('Error:', error);

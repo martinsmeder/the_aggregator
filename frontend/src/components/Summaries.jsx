@@ -30,18 +30,11 @@ export default function Summaries() {
       <Header />
       <main id="summaries">
         {items.map((item) => (
-          <div key={item.rssId} className="card">
-            <img src={item.image} alt={item.title} />
+          <div key={item.title} className="card">
             <div className="wrapper">
               <div className="top">
                 <h3>{item.title}</h3>
                 <p className="summaryText">{item.summary}</p>
-              </div>
-              <div className="bottom">
-                <p>{item.published}</p>
-                <a target="_blank" href={item.url}>
-                  Full article
-                </a>
               </div>
             </div>
           </div>
