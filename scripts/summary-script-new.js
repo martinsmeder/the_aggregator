@@ -60,7 +60,8 @@ function scrapeText(url) {
 
             return {
                 title,
-                bodyText
+                bodyText,
+                url
             };
         })
         .catch(error => {
@@ -69,37 +70,19 @@ function scrapeText(url) {
         });
 }
 
-function getUniqueLink(links, visitedLinks) {
-    return new Promise((resolve) => {
-        let randomLink = getRandomLink(links);
-
-        while (visitedLinks.includes(randomLink)) { // If randomlink already exist...
-            randomLink = getRandomLink(links); // ...keep generating random links.
-        }
-
-        resolve(randomLink); // Resolve promise when unique link is found.
-    });
-}
-
 function getWikipediaText() {
-    return getLinks()
-        .then(links => {
-            return firestore.queryItems(db, 'visited', 'asc', 1000)
-                .then(snapshot => {
-                    return firestore.getVisitedLinks(snapshot)
-                        .then(visitedLinks => {
-                            if (visitedLinks.length >= links.length) {
-                                console.log("All links summarized.")
-                                return null;
-                            } else {
-                                return getUniqueLink(links, visitedLinks)
-                                    .then(uniqueLink => {
-                                        return firestore.addVisitedLinkToFirestore(db, uniqueLink)
-                                            .then(() => scrapeText(uniqueLink));
-                                    });
-                            }
-                        });
-                });
+    return Promise.all([getLinks(), firestore.queryItems(db, 'summaries', 'asc', 1000)])
+        .then(([links, snapshot]) => {
+            const storedUrls = snapshot.docs.map(doc => doc.data().url);
+            const filteredLinks = links.filter(link => !storedUrls.includes(link));
+
+            if (filteredLinks.length === 0) {
+                console.log("All links have already been summarized.");
+                return null;
+            }
+
+            const randomLink = getRandomLink(filteredLinks);
+            return scrapeText(randomLink);
         })
         .catch(error => {
             console.error('Error:', error);
@@ -115,7 +98,8 @@ function addSummaryData(wikiText) {
         .then(summarizedText => {
             const summary = {
                 title: wikiText.title,
-                summary: summarizedText[0].summary_text
+                summary: summarizedText[0].summary_text,
+                url: wikiText.url
             };
             return firestore.addToFirestore(db, "summaries", [summary]);
         })
@@ -136,20 +120,5 @@ function init() {
 }
 
 init()
-
-//// Test
-// getLinks().then(links => {
-//     const promises = links.map(link => {
-//         return firestore.addVisitedLinkToFirestore(testDb, link);
-//     });
-
-//     return Promise.all(promises);
-// })
-//     .then(() => {
-//         console.log('All links have been added to Firestore.');
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//     });
 
 

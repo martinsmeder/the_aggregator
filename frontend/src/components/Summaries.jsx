@@ -36,6 +36,11 @@ export default function Summaries() {
                 <h3>{item.title}</h3>
                 <p className="summaryText">{item.summary}</p>
               </div>
+              <div className="bottom">
+                <a target="_blank" href={item.url}>
+                  Full article
+                </a>
+              </div>
             </div>
           </div>
         ))}
