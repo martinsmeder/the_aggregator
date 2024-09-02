@@ -1,111 +1,124 @@
-require("dotenv").config();
-const fetch = require("node-fetch");
-const summarize = require("./huggingface");
-const { db } = require("./firebase-cjs");
-// const { testDb } = require("./firebase-test-cjs");
+const axios = require('axios');
+const cheerio = require('cheerio');
 const firestore = require("./database-logic");
-const miscHelpers = require("./utils");
+const { db } = require("./firebase-cjs");
+const summarize = require("./huggingface");
 
-const summaryScript = (() => {
-  const apiUrl = "https://api.rss2json.com/v1/api.json";
-  const feedUrl = "https://news.mit.edu/topic/mitmachine-learning-rss.xml";
-  const apiKey = process.env.RSS_API_KEY;
-  const fullUrl = `${apiUrl}?rss_url=${feedUrl}&api_key=${apiKey}&count=1000`;
+function getLinks() {
+    const url = 'https://en.wikipedia.org/wiki/List_of_emerging_technologies';
 
-  function getSingleFeed(url) {
-    return fetch(url)
-      .then((response) => response.json())
-      .then((json) => miscHelpers.parseSummaryData(json.items))
-      .catch((error) => console.error(error));
-  }
+    return axios.get(url)
+        .then(response => cheerio.load(response.data))
+        .then($ => {
+            const allLinks = [];
+            const tables = $('#mw-content-text > .mw-parser-output > table');
 
-  function summarizeArray(articles, maxAttempts = 5) {
-    const processArticle = (article, attempt = 1) =>
-      summarize({ inputs: article.content })
-        .then((response) => {
-          // Update article with newly created summary
-          const updatedArticle = { ...article };
-          updatedArticle.summary = response[0].summary_text;
-          return updatedArticle;
+            tables.each((tableIndex, tableElement) => {
+                $(tableElement).find('tbody > tr').each((rowIndex, rowElement) => {
+                    const linkElement = $(rowElement).find('td').first().find('a');
+                    if (linkElement.length) {
+                        const link = 'https://en.wikipedia.org' + linkElement.attr('href');
+                        allLinks.push(link);
+                    }
+                });
+            });
+
+            return allLinks;
         })
-        .catch((error) => {
-          console.error(`Error summarizing: ${error}`);
-          // Keep calling processArticle until either the summarization
-          // succeeds or maxAttempts is reached
-          if (attempt < maxAttempts) {
-            console.log(
-              `Retrying summarization for article (${
-                attempt + 1
-              }/${maxAttempts})`
-            );
-            return processArticle(article, attempt + 1);
-          }
-          console.error(
-            `Exceeded maximum attempts (${maxAttempts}) for this article.`
-          );
-          return article;
+        .catch(error => {
+            console.error('Error fetching the technology links:', error);
+            throw error;
         });
+}
 
-    // Create an array of promises by calling processArticle on each article
-    const promises = articles.map((article) => processArticle(article));
+function getRandomLink(links) {
+    if (links.length === 0) return null;
+    const randomIndex = Math.floor(Math.random() * links.length);
+    return links[randomIndex];
+}
 
-    return Promise.all(promises);
-  }
+function scrapeText(url) {
+    return axios.get(url)
+        .then(response => cheerio.load(response.data))
+        .then($ => {
+            const title = $('#firstHeading > span').text().trim();
 
-  function getSummarizedFeeds(url) {
-    return getSingleFeed(url)
-      .then((feedData) => summarizeArray(feedData, 5))
-      .catch((error) => console.error(error));
-  }
+            const paragraphs = [];
+            const contentDiv = $('#mw-content-text > div.mw-content-ltr.mw-parser-output');
 
-  function queryAndDelete(database) {
-    return firestore
-      .queryItems(database, "summaries", "asc", 500)
-      .then((querySnapshot) => firestore.deleteOlderThanOneMonth(querySnapshot))
-      .then(() => "Old data successfully deleted.")
-      .catch((error) => console.error(`Error: ${error}`));
-  }
+            const endDivClass = 'mw-heading mw-heading2';
 
-  function addRssData(database) {
-    return (
-      firestore
-        .queryItems(database, "summaries", "desc", 500)
-        .then((querySnapshot) => {
-          firestore.setExistingIds(querySnapshot);
-          return getSummarizedFeeds(fullUrl);
+            let currentElement = contentDiv.children().first();
+            while (currentElement.length && !currentElement.hasClass(endDivClass)) {
+                if (currentElement.is('p')) {
+                    paragraphs.push(currentElement.text().trim());
+                }
+                currentElement = currentElement.next();
+            }
+
+            const bodyText = paragraphs.join('\n\n');
+
+            return {
+                title,
+                bodyText,
+                url
+            };
         })
-        .then((processedData) =>
-          firestore.addToFirestore(database, "summaries", processedData)
-        )
-        // eslint-disable-next-line no-return-assign
-        .then(() => (firestore.existingIds.length = 0))
-        .then(() => "New data successfully added.")
-        .catch((error) => console.error(`Error: ${error}`))
-    );
-  }
+        .catch(error => {
+            console.error('Error scraping the article:', error);
+            throw error;
+        });
+}
 
-  function init(database) {
-    queryAndDelete(database)
-      .then((result) => {
-        console.log(result);
-        return addRssData(database);
-      })
-      .then((result) => {
-        console.log(result);
-        console.log("Script executed successfully.");
-      })
-      .catch((error) => console.error(`Error: ${error}`))
-      .finally(() => process.exit(0)); // Terminate script
-  }
+function getWikipediaText() {
+    return Promise.all([getLinks(), firestore.queryItems(db, 'summaries', 'asc', 1000)])
+        .then(([links, snapshot]) => {
+            const storedUrls = snapshot.docs.map(doc => doc.data().url);
+            const filteredLinks = links.filter(link => !storedUrls.includes(link));
 
-  return {
-    getSingleFeed,
-    queryAndDelete,
-    addRssData,
-    init,
-  };
-})();
+            if (filteredLinks.length === 0) {
+                console.log("All links have already been summarized.");
+                return null;
+            }
 
-summaryScript.init(db);
+            const randomLink = getRandomLink(filteredLinks);
+            return scrapeText(randomLink);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
 
-module.exports = summaryScript;
+function addSummaryData(wikiText) {
+    if (!wikiText) {
+        return;
+    }
+
+    return summarize({ inputs: wikiText.bodyText })
+        .then(summarizedText => {
+            const summary = {
+                title: wikiText.title,
+                summary: summarizedText[0].summary_text,
+                url: wikiText.url
+            };
+            return firestore.addToFirestore(db, "summaries", [summary]);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function init() {
+    return getWikipediaText()
+        .then(wikiText => {
+            return addSummaryData(wikiText);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
+        .finally(() => process.exit(0));
+}
+
+init()
+
+

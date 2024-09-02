@@ -31,30 +31,11 @@ const miscHelpers = (() => {
     return oneMonthAgo;
   }
 
-  function parseSummaryData(array) {
-    return array
-      .filter((item) => new Date(item.pubDate) > getOneMonthAgo())
-      .map((item) => {
-        const date = new Date(item.pubDate);
-        return {
-          title: item.title,
-          url: item.link,
-          content: item.content,
-          rssId: item.title + item.link,
-          published: date.toLocaleString(),
-          timestamp: date.getTime(),
-          image: item.enclosure.link,
-          summary: null,
-        };
-      });
-  }
-
   return {
     getCurrentMonth,
     getCurrentYear,
     getOneYearAgo,
     getOneMonthAgo,
-    parseSummaryData,
   };
 })();
 

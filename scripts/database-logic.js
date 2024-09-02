@@ -81,39 +81,6 @@ const firestore = (() => {
     return Promise.all(writePromises);
   }
 
-  function addVisitedLinkToFirestore(database, url) {
-    const collectionRef = collection(database, 'visited');
-    const timestamp = Date.now();
-
-    return addDoc(collectionRef, {
-      url,
-      timestamp
-    })
-      .then(() => {
-        console.log(`Added URL: ${url} to Firestore.`);
-      })
-      .catch((error) => {
-        console.error('Error adding visited link to Firestore:', error);
-        throw error;
-      });
-  }
-
-  function getVisitedLinks(querySnapshot) {
-    return new Promise((resolve, reject) => {
-      try {
-        const visitedLinks = [];
-
-        querySnapshot.docs.forEach((doc) => {
-          visitedLinks.push(doc.data().url);
-        });
-
-        resolve(visitedLinks);
-      } catch (error) {
-        reject(`Error retrieving visited links: ${error}`);
-      }
-    });
-  }
-
   function clearFirestore(querySnapshot) {
     const deletionPromises = querySnapshot.docs.map((doc) =>
       deleteDoc(doc.ref)
@@ -128,8 +95,6 @@ const firestore = (() => {
     deleteOlderThanOneYear,
     deleteOlderThanOneMonth,
     addToFirestore,
-    addVisitedLinkToFirestore,
-    getVisitedLinks,
     clearFirestore,
   };
 })();
