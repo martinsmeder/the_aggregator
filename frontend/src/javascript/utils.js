@@ -2,6 +2,9 @@ export function getUniqueItems(existingItems, newItems) {
   // Copy the existing items to a new array
   const uniqueItems = [...existingItems];
 
+  console.log("Existing items:", existingItems); // Correct
+  console.log("Newly fetched items:", newItems); // Correct
+
   // Loop through the new items
   newItems.forEach((newItem) => {
     // Check if the new item's ID already exists in the unique items array

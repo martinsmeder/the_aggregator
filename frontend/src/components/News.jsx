@@ -38,12 +38,11 @@ export default function News() {
     window.addEventListener("scroll", handleScroll);
     // Remove event listener on component unmounts to avoid memory leaks
     return () => window.removeEventListener("scroll", handleScroll);
-    // Re-run the effect whenever 'snapshot' or 'category' changes
+    // Re-run the effect whenever 'snapshot'
   }, [snapshot]);
 
   useEffect(() => {
     // Get initial data
-    // getAllQueries(db)
     getNews(db)
       .then((querySnapshot) => {
         // Set snapshot to enable fetching of new items on scroll
@@ -60,14 +59,21 @@ export default function News() {
   }, []);
 
   function fetchItems(snapshot) {
+    console.log("Fetching more items...");
     getAllQueries(db, snapshot)
       .then((querySnapshot) => {
         setSnapshot(querySnapshot);
         return querySnapshot.docs.map((doc) => doc.data());
       })
-      .then((mapped) => {
-        let updatedItems = getUniqueItems(items, mapped);
-        setItems(updatedItems);
+      .then((newItems) => {
+        setItems((prevItems) => {
+          const updatedItems = getUniqueItems(prevItems, newItems);
+          console.log("updatedItems: " + JSON.stringify(updatedItems, null, 2));
+          return updatedItems;
+        });
+      })
+      .catch((error) => {
+        console.error("Error fetching items:", error);
       });
   }
 
@@ -86,7 +92,7 @@ export default function News() {
               <hr />
               <div className="bottom">
                 <p>
-                  {item.source} // {getTimeDifference(item.published)}
+                  {getTimeDifference(item.published)}
                 </p>
 
                 <a target="_blank" href={item.url} rel="noreferrer">
