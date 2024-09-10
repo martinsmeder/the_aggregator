@@ -6,13 +6,11 @@ Live demo: https://the-aggregator.vercel.app/
 
 An aggregator app build with JavaScript and React. Powered by Firebase, Hugging Face, Jooble and Github Actions.
 
-This project is tested with Browserstack.
-
 The app has three components:
 
-- AI summarization
-- Regular RSS Feeds
-- Job data
+- AI-generated summaries of emerging technologies
+- Technology-related news
+- Line chart displaying job trends
 
 ### Summaries
 
@@ -20,23 +18,22 @@ The app has three components:
 
 ##### This script does the following (once a day):
 
-1. Remove summaries older than one month from database
-2. Fetch and parse RSS data from a single RSS feed
-3. Summarize each articles content using the ["bart-large-cnn" AI model hosted by Hugging Face](https://huggingface.co/facebook/bart-large-cnn)
-4. Adds the newly created summaries to the previously parsed data
-5. Sends everything to the database
+1. Check for new, unscraped articles on Wikipedia's "List of emerging technologies".
+2. Scrape the first block of text from a random, unscraped article (if there are any).
+3. Summarize the text using the ["bart-large-cnn" AI model hosted by Hugging Face](https://huggingface.co/facebook/bart-large-cnn).
+4. Send the newly created summary to the database.
 
 ##### The frontend renders the summarized content using React
 
-### Feeds
+### News
 
-![Feeds](screenshots/feeds-screenshot.png)
+![News](screenshots/news-screenshot.png)
 
 ##### This script does the following (once a day):
 
-1. Remove RSS data older than one month from database
-2. Fetch and parse RSS data from an array of multiple RSS feeds in different categories
-3. Sends the parsed RSS data to the database
+1. Remove news data older than one month from the database.
+2. Fetch the top technology-related headlines from the past 24 hours using the News API.
+3. Send the fetched news data to the database.
 
 ##### The frontend renders the RSS data using React
 
@@ -46,8 +43,8 @@ The app has three components:
 
 ##### This script does the following (once a month):
 
-1. Fetch and parse job data using the Jooble API
-2. Sends it to the database
+1. Fetch and parse job data using the Jooble API.
+2. Send it to the database.
 
 ##### The frontend renders the job data using React and the React ChartJS 2 library
 
