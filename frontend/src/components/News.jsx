@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-no-comment-textnodes */
 import {
   getAllQueries,
-  getNews,
+  // getContent,
 } from "../javascript/database-logic";
 import {
   sortItems,
@@ -43,7 +43,7 @@ export default function News() {
 
   useEffect(() => {
     // Get initial data
-    getNews(db)
+    getAllQueries(db, "news")
       .then((querySnapshot) => {
         // Set snapshot to enable fetching of new items on scroll
         setSnapshot(querySnapshot);

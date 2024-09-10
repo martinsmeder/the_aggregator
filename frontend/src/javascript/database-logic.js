@@ -42,20 +42,20 @@ export function getAllQueries(database, collectionName, querySnapshot = null) {
   return getDocs(q);
 }
 
-export function getNews(database, querySnapshot = null) {
-  const collectionRef = collection(database, "news");
-  const lastVisible = getLastVisible(querySnapshot);
+// export function getContent(database, collectionName, querySnapshot = null) {
+//   const collectionRef = collection(database, collectionName);
+//   const lastVisible = getLastVisible(querySnapshot);
 
-  let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
+//   let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
 
-  if (lastVisible) {
-    q = query(
-      collectionRef,
-      orderBy("timestamp", "desc"),
-      limit(10),
-      startAfter(lastVisible)
-    );
-  }
+//   if (lastVisible) {
+//     q = query(
+//       collectionRef,
+//       orderBy("timestamp", "desc"),
+//       limit(10),
+//       startAfter(lastVisible)
+//     );
+//   }
 
-  return getDocs(q);
-}
+//   return getDocs(q);
+// }
