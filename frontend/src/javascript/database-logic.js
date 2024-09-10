@@ -27,7 +27,6 @@ export function getSingleQuery(database, collectionName) {
 export function getAllQueries(database, querySnapshot = null) {
   const collectionRef = collection(database, "news");
   const lastVisible = getLastVisible(querySnapshot);
-  console.log("Last visible document:", lastVisible); // Correct
 
   let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
 

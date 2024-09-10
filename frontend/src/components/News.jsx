@@ -59,7 +59,6 @@ export default function News() {
   }, []);
 
   function fetchItems(snapshot) {
-    console.log("Fetching more items...");
     getAllQueries(db, snapshot)
       .then((querySnapshot) => {
         setSnapshot(querySnapshot);
@@ -68,7 +67,6 @@ export default function News() {
       .then((newItems) => {
         setItems((prevItems) => {
           const updatedItems = getUniqueItems(prevItems, newItems);
-          console.log("updatedItems: " + JSON.stringify(updatedItems, null, 2));
           return updatedItems;
         });
       })
