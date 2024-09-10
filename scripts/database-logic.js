@@ -17,14 +17,16 @@ const firestore = (() => {
   }
 
   function queryItems(database, collectionName, order, itemLimit) {
-    const collectionRef = collection(database, collectionName);
+    // Queries items from a Firestore collection with ordering and limit
+    const collectionRef = collection(database, collectionName);  // Reference to the Firestore collection
+    // Create a query to order by 'timestamp' and limit the results
     const q = query(
       collectionRef,
-      orderBy("timestamp", order),
-      limit(itemLimit)
+      orderBy("timestamp", order),  // Order by the 'timestamp' field (asc or desc)
+      limit(itemLimit)  // Limit the number of items returned
     );
 
-    return getDocs(q);
+    return getDocs(q);  // Execute the query and return the resulting documents
   }
 
   function deleteOlderThanOneYear(querySnapshot) {
