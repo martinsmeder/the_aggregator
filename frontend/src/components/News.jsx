@@ -30,7 +30,7 @@ export default function News() {
 
       // If user scrolled beyond 90% of the page, fetch more items
       if (scrollPercentage > 0.9) {
-        fetchItems(snapshot);
+        fetchItems(snapshot, "news");
       }
     }
 
@@ -58,8 +58,8 @@ export default function News() {
       .catch((error) => setError(error));
   }, []);
 
-  function fetchItems(snapshot) {
-    getAllQueries(db, snapshot)
+  function fetchItems(snapshot, collectionName) {
+    getAllQueries(db, collectionName, snapshot)
       .then((querySnapshot) => {
         setSnapshot(querySnapshot);
         return querySnapshot.docs.map((doc) => doc.data());

@@ -24,8 +24,8 @@ export function getSingleQuery(database, collectionName) {
   return getDocs(q);
 }
 
-export function getAllQueries(database, querySnapshot = null) {
-  const collectionRef = collection(database, "news");
+export function getAllQueries(database, collectionName, querySnapshot = null) {
+  const collectionRef = collection(database, collectionName);
   const lastVisible = getLastVisible(querySnapshot);
 
   let q = query(collectionRef, orderBy("timestamp", "desc"), limit(10));
