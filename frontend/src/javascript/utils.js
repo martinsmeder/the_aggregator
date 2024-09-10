@@ -1,20 +1,3 @@
-export function getUniqueItems(existingItems, newItems) {
-  // Copy the existing items to a new array
-  const uniqueItems = [...existingItems];
-
-  // Loop through the new items
-  newItems.forEach((newItem) => {
-    // Check if the new item's ID already exists in the unique items array
-    if (!uniqueItems.find((item) => item.url === newItem.url)) {
-      // If not found, add the new item to the unique items array
-      uniqueItems.push(newItem);
-    }
-  });
-
-  // Return the array containing unique items
-  return uniqueItems;
-}
-
 export function getTimeDifference(publishedDate) {
   const currentDate = new Date();
   const timeDifference = Math.abs(currentDate - new Date(publishedDate));
