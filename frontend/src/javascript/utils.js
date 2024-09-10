@@ -1,9 +1,11 @@
 export function getTimeDifference(publishedDate) {
-  const currentDate = new Date();
-  const timeDifference = Math.abs(currentDate - new Date(publishedDate));
-  const hoursDifference = Math.floor(timeDifference / 3600000);
-  const daysDifference = Math.floor(hoursDifference / 24);
+  // Calculate the time difference between the current date and the published date
+  const currentDate = new Date();  // Get the current date
+  const timeDifference = Math.abs(currentDate - new Date(publishedDate));  // Time difference in milliseconds
+  const hoursDifference = Math.floor(timeDifference / 3600000);  // Convert to hours
+  const daysDifference = Math.floor(hoursDifference / 24);  // Convert to days
 
+  // Return the difference in hours if less than 24 hours, otherwise return days
   if (hoursDifference < 24) {
     return `${hoursDifference}hr`;
   } else {
@@ -12,10 +14,11 @@ export function getTimeDifference(publishedDate) {
 }
 
 export function sortItems(arr) {
+  // Sort items in descending order by their 'published' date
   return arr.sort((a, b) => {
-    const dateA = new Date(a.published);
-    const dateB = new Date(b.published);
-    return dateB - dateA;
+    const dateA = new Date(a.published);  // Parse published date of item A
+    const dateB = new Date(b.published);  // Parse published date of item B
+    return dateB - dateA;  // Sort in descending order (newest first)
   });
 }
 

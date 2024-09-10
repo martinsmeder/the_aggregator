@@ -13,20 +13,23 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 export default function News() {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
+  const [items, setItems] = useState([]);  // State to store fetched items
+  const [error, setError] = useState(null);  // State to store any error
 
   useEffect(() => {
+    // Fetch data from "news" collection
     getSingleQuery(db, "news")
       .then((querySnapshot) => {
+        // Map documents to an array of items
         return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => {
+        // Sort the mapped items and update state
         const sortedItems = sortItems(mapped);
         setItems(sortedItems);
       })
-      .catch((error) => setError(error));
-  }, []);
+      .catch((error) => setError(error));  // Catch and store any errors
+  }, []);  // Empty dependency array to run the effect only once on component mount
 
   if (error) return <p>Error: {error}</p>;
   return (

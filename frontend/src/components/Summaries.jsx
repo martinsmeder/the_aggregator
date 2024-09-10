@@ -8,20 +8,23 @@ import Header from "./Header";
 import Footer from "./Footer";
 
 export default function Summaries() {
-  const [items, setItems] = useState([]);
-  const [error, setError] = useState(null);
+  const [items, setItems] = useState([]);  // State to store fetched summaries
+  const [error, setError] = useState(null);  // State to store any error
 
   useEffect(() => {
+    // Fetch data from "summaries" collection
     getSingleQuery(db, "summaries")
       .then((querySnapshot) => {
+        // Map documents to an array of items
         return querySnapshot.docs.map((doc) => doc.data());
       })
       .then((mapped) => {
+        // Sort the items and update the state
         const sortedItems = sortItems(mapped);
         setItems(sortedItems);
       })
-      .catch((error) => setError(error));
-  }, []);
+      .catch((error) => setError(error));  // Handle and store any errors
+  }, []);  // Empty dependency array ensures this effect runs once on component mount
 
   if (error) return <p>Error: {error}</p>;
 
